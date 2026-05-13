@@ -38,17 +38,20 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     const [menuState, setMenuState] = React.useState<menuType>();
     const [saveing, setSaveing] = React.useState(false);
 
+    const [itemOfMulty, setItemOfMulty] = React.useState(0);
     useEffect(() => {
         async function getMenu(id: string) {
             console.log("get Menu id : " + idEdit);
 
             try {
                 const api = axios.create({
-                    baseURL: "http://localhost:3000",
+                    // baseURL: "http://localhost:3000",
+                    baseURL: "http://10.240.195.179:3000",
                 });
                 const resault = await api.get(`/menu/${idEdit}`);
                 console.log(resault.data);
                 setMenuState(resault.data);
+                setItemOfMulty(0);
             } catch (err) {
                 console.log(err);
             }
@@ -179,14 +182,11 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
         };
     }
 
-    const itemOfMulty = 0;
-
     //------------------------------------------------------
     if (menuState?.type == typeMenuEnum.SETTING_MULTY_GROUP) {
         const items = menuState.data.settingMultyGroup;
         if (items == undefined || items?.length == 0) return;
         const item = items[itemOfMulty];
-
         if (item.settingOneParameter) {
             Item_oneParameter = item.settingOneParameter;
             setItem_oneParameter = (set) => {
@@ -247,6 +247,16 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
             };
         }
     }
+
+    let multyGroupSelect: string[] = [];
+    if (menuState?.data?.settingMultyGroup?.length) {
+        menuState.data.settingMultyGroup.map((item) => {
+            if (item.settingOneParameter)
+                multyGroupSelect.push(item.settingOneParameter.label);
+            if (item.settingOneSelect)
+                multyGroupSelect.push(item.settingOneSelect.label);
+        });
+    }
     return (
         <Stack direction={"column"} spacing={1} sx={{ height: "100%" }}>
             <Stack
@@ -267,6 +277,34 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
                 <Typography variant="h6" p={0.2}>
                     {menuState?.lable}
                 </Typography>
+
+                {multyGroupSelect.length ? (
+                    <FormControl color="primary">
+                        <InputLabel id="demo-simple-select-label">
+                            Items
+                        </InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            label="Navgation"
+                            value={itemOfMulty}
+                            size="small"
+                            color="primary"
+                            sx={{ background: "white" }}
+                            onChange={(event) => {
+                                setItemOfMulty(Number(event.target.value));
+                            }}
+                        >
+                            {multyGroupSelect.map((name, index) => (
+                                <MenuItem key={index} value={index}>
+                                    {name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                ) : (
+                    ""
+                )}
 
                 <FormControl color="primary">
                     <InputLabel id="demo-simple-select-label">

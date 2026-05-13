@@ -10,6 +10,7 @@ import {
     TextField,
 } from "@mui/material";
 import axios from "axios";
+import { useSnackBarError } from "../snakebar-store";
 
 type propsType = {
     description: DescriptionType;
@@ -22,6 +23,8 @@ export default function EditDescription({
     const [languageSelect, setLanguageSelect] = React.useState("persian");
 
     const [translating, setTranslating] = React.useState(false);
+
+    const addError = useSnackBarError((state) => state.addError);
 
     let languages = Object.keys(description);
 
@@ -53,6 +56,7 @@ export default function EditDescription({
                 setDescription(translate);
             } catch (err) {
                 console.log(err);
+                addError("connection Error");
             }
             setTranslating(false);
         }

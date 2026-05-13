@@ -78,6 +78,7 @@ export default function EditOptions({ options, setOptions }: propsType) {
                             fullWidth
                             size="small"
                             value={row.descibe}
+                            dir={optionLanguage == "persian" ? "rtl" : "ltr"}
                             onChange={(event) => {
                                 setOptions((prev) => {
                                     return prev.map((option, index) => {
