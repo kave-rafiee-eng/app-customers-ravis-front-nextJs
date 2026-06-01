@@ -14,8 +14,8 @@ import SimpleSnackbar from "./component/SnackbarError";
 export default function Menu() {
     const [editId, setEditId] = React.useState<string>("14");
     const api = axios.create({
-        // baseURL: "http://localhost:3000",
-        baseURL: "http://10.240.195.179:3000",
+        baseURL: "http://localhost:3000",
+        // baseURL: "http://10.240.195.179:3000",
     });
 
     const [allMenus, setAllMenus] = React.useState<menuType[]>([]);
