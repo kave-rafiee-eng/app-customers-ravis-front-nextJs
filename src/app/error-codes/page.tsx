@@ -4,13 +4,14 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import axios from "axios";
-import { Grid, Modal } from "@mui/material";
+import { Grid, Modal, Typography } from "@mui/material";
 import SimpleSnackbar from "../general-components/SnackbarError";
 import { errorCodeType } from "./errorType";
 import AddErrorCode from "./addErrorCode";
 import ShowListErros from "./listErrors";
 import { useSnackBarError } from "../stors/snakebar-store";
 import EditErrorCode from "./editError";
+import Link from "next/link";
 
 export default function ErrorCodeHome() {
   const addMessage = useSnackBarError((state) => state.addMessage);
@@ -88,11 +89,23 @@ export default function ErrorCodeHome() {
       <Box sx={{ background: "#1B3C53", height: "10%" }}>
         <Stack
           direction={"row"}
-          justifyContent={"space-evenly"}
+          justifyContent={"start"}
           alignItems={"center"}
           alignContent={"center"}
           height={"100%"}
+          spacing={2}
         >
+          <Link color="red" href={"/"}>
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              gutterBottom
+              color="white"
+            >
+              Home
+            </Typography>
+          </Link>
+
           <Button variant="contained" onClick={handleOpen}>
             add new Error
           </Button>

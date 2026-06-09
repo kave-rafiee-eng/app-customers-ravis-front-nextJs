@@ -1,10 +1,14 @@
 "use client";
 import axios from "axios";
 import React from "react";
-import { errorCodeType } from "./errorType";
+import { errorCodeType, ErrorOriginEnum } from "./errorType";
 import {
   Box,
   Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   Tab,
   Tabs,
@@ -148,6 +152,7 @@ export default function EditErrorCode({ code, onUpdate }: propsType) {
           direction={"row"}
           justifyContent={"space-evenly"}
           marginBottom={"5%"}
+          spacing={1}
         >
           <TextField
             label="name"
@@ -157,6 +162,38 @@ export default function EditErrorCode({ code, onUpdate }: propsType) {
             disabled={ErrorCode == null}
             sx={{ flex: 1, marginRight: "10%" }}
           />
+
+          {ErrorCode != null && (
+            <FormControl size="small">
+              <InputLabel id="origin-filter-label">origin</InputLabel>
+              <Select
+                labelId="origin-filter-label"
+                label="origin"
+                value={ErrorCode.origin}
+                onChange={(event) => {
+                  setErrorCode((prev) => {
+                    if (prev == null) return prev;
+                    else
+                      return {
+                        ...prev,
+                        origin: event.target.value as ErrorOriginEnum,
+                      };
+                  });
+                }}
+                size={"small"}
+              >
+                <MenuItem value={ErrorOriginEnum.ONLY_ADVANCE}>
+                  {ErrorOriginEnum.ONLY_ADVANCE}
+                </MenuItem>
+                <MenuItem value={ErrorOriginEnum.ONLY_TERSE}>
+                  {ErrorOriginEnum.ONLY_TERSE}
+                </MenuItem>
+                <MenuItem value={ErrorOriginEnum.ADVANCE_TERSE}>
+                  {ErrorOriginEnum.ADVANCE_TERSE}
+                </MenuItem>
+              </Select>
+            </FormControl>
+          )}
 
           <Button
             variant="outlined"
