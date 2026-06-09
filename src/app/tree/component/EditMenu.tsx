@@ -25,6 +25,7 @@ import EditMenu_settingOneSelect from "./EditMenu-settingOneSelect";
 import axios from "axios";
 import EditMenu_settingMultySelect from "./EditMenu-settingMultySelect";
 import { useSnackBarError } from "../snakebar-store";
+import EditMenu_subMenu from "./EdirMenu-subMenu";
 
 const api = axios.create({
     baseURL: "http://localhost:3000",
@@ -117,6 +118,8 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
         | ((set: (prev: MiniDescriptionType) => MiniDescriptionType) => void)
         | undefined = undefined;
 
+    let menuIsSubMenu: boolean = false;
+
     let setItem_oneParameter:
         | ((
               set: (prev: settingOneParameterType) => settingOneParameterType,
@@ -140,7 +143,8 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     if (
         menuState?.type == typeMenuEnum.SETTING_ON_PARAMETER ||
         menuState?.type == typeMenuEnum.SETTING_ON_SELECT ||
-        menuState?.type == typeMenuEnum.SETTING_MULTY_SELECT
+        menuState?.type == typeMenuEnum.SETTING_MULTY_SELECT ||
+        menuState?.type == typeMenuEnum.SUBMENU
     ) {
         descrption = menuState.description;
         setDescription = (set) => {
@@ -167,7 +171,9 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
             });
         };
     }
-    if (menuState?.type == typeMenuEnum.SETTING_ON_PARAMETER) {
+    if (menuState?.type == typeMenuEnum.SUBMENU) {
+        menuIsSubMenu = true;
+    } else if (menuState?.type == typeMenuEnum.SETTING_ON_PARAMETER) {
         Item_oneParameter = menuState.data.settingOneParameter;
         setItem_oneParameter = (set) => {
             setMenuState((prev) => {
@@ -182,9 +188,7 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
                 };
             });
         };
-    }
-
-    if (menuState?.type == typeMenuEnum.SETTING_ON_SELECT) {
+    } else if (menuState?.type == typeMenuEnum.SETTING_ON_SELECT) {
         Item_oneSelect = menuState.data.settingOneSelect;
         setItem_oneSelect = (set) => {
             setMenuState((prev) => {
@@ -199,9 +203,7 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
                 };
             });
         };
-    }
-
-    if (menuState?.type == typeMenuEnum.SETTING_MULTY_SELECT) {
+    } else if (menuState?.type == typeMenuEnum.SETTING_MULTY_SELECT) {
         Item_multySelect = menuState.data.settingMultySelect;
         setItem_multySelect = (set) => {
             setMenuState((prev) => {
@@ -483,6 +485,24 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
                     setDescription={setDescription}
                     descrption_AI={descrption_AI}
                     setDescription_AI={setDescription_AI}
+                />
+            ) : (
+                ""
+            )}
+
+            {menuIsSubMenu &&
+            descrption &&
+            setDescription &&
+            descrption_AI &&
+            setDescription_AI &&
+            menuState ? (
+                <EditMenu_subMenu
+                    descrption={descrption}
+                    setDescription={setDescription}
+                    descrption_AI={descrption_AI}
+                    setDescription_AI={setDescription_AI}
+                    allMenu={allMenus}
+                    id={menuState?.id}
                 />
             ) : (
                 ""

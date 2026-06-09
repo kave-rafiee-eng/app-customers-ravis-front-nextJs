@@ -124,15 +124,34 @@ export default function TreeView({ menus, handleEdit }: TreeViewProps) {
                         )}
 
                         {nodes.type === "subMenu" && (
-                            <Typography
+                            <Stack
+                                direction={"row"}
                                 sx={{
-                                    fontSize: 14,
-                                    fontWeight: 500,
-                                    color: "text.primary",
+                                    background: "rgba(0,0,0,0.04)",
                                 }}
                             >
-                                {nodes.name}
-                            </Typography>
+                                <Typography
+                                    sx={{
+                                        fontSize: 14,
+                                        fontWeight: 500,
+                                        color: "text.primary",
+                                    }}
+                                >
+                                    {nodes.name}
+                                </Typography>
+
+                                <Button
+                                    variant="text"
+                                    size="small"
+                                    sx={{
+                                        textTransform: "none",
+                                        fontWeight: 500,
+                                    }}
+                                    onClick={() => handleEdit(nodes.id)}
+                                >
+                                    Edit
+                                </Button>
+                            </Stack>
                         )}
                     </Stack>
                 }
