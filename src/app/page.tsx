@@ -14,6 +14,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import type { SvgIconComponent } from "@mui/icons-material";
 
 type Section = {
@@ -45,6 +46,13 @@ const appSections: Section[] = [
     href: "chatbot",
     icon: SmartToyIcon,
     accent: "#2E5A6F",
+  },
+  {
+    title: "Documents(pdf)",
+    description: "edit pdf files and categories",
+    href: "documents",
+    icon: PictureAsPdfIcon,
+    accent: "#B4E309",
   },
 ];
 

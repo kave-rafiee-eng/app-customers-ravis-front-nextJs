@@ -6,22 +6,23 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import { Grid, Modal, Typography } from "@mui/material";
 import SimpleSnackbar from "../general-components/SnackbarError";
-import { errorCodeType } from "./errorType";
-import AddErrorCode from "./addErrorCode";
-import ShowListErros from "./listErrors";
 import { useSnackBarError } from "../stors/snakebar-store";
-import EditErrorCode from "./editError";
+
 import Link from "next/link";
+import { GroupDocType } from "./documentsType";
+import { backendUrl } from "../constant";
+import AddGroupDoc from "./addGroupDoc";
 
 export default function ErrorCodeHome() {
   const addMessage = useSnackBarError((state) => state.addMessage);
-  const [activeCode, setActiveCode] = React.useState("");
+
+  const [activeId, setActiveId] = React.useState("");
+
   const api = axios.create({
-    baseURL: "http://localhost:3000",
-    // baseURL: "http://10.240.195.179:3000",
+    baseURL: backendUrl,
   });
 
-  const [allErrors, setAllErrors] = React.useState<errorCodeType[]>([]);
+  const [listGroups, setListGroups] = React.useState<GroupDocType[]>([]);
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -29,11 +30,11 @@ export default function ErrorCodeHome() {
 
   const loadData = async () => {
     try {
-      const response = await api.get("/error-code");
-      setAllErrors((prev) => {
+      const response = await api.get("/documents");
+      setListGroups((prev) => {
         return response.data;
       });
-      console.log("get Errors List");
+      console.log("get List documents");
       console.log(response.data);
     } catch (err) {
       console.log(err);
@@ -44,36 +45,39 @@ export default function ErrorCodeHome() {
     loadData();
   }, []);
 
-  const handleSelect = (code: string) => {
-    setActiveCode(code);
+  const handleSelect = (uuid: string) => {
+    setActiveId(uuid);
   };
 
   const handleDownloadJson = () => {
-    if (allErrors.length === 0) {
-      addMessage("No error codes to download", "error");
+    if (listGroups.length === 0) {
+      addMessage("No documents to download", "error");
       return;
     }
 
-    const json = JSON.stringify(allErrors, null, 2);
+    const json = JSON.stringify(listGroups, null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     // link.download = `error-codes-${new Date().toISOString().slice(0, 10)}.json`;
-    link.download = `errorCodes_json.json`;
+    link.download = `documents.json`;
 
     link.click();
     URL.revokeObjectURL(url);
     addMessage("JSON file downloaded", "succes");
   };
 
-  const handleDelete = async (code: string) => {
+  const handleDelete = async (uuid: string) => {
     try {
-      await api.delete(`/error-code/${code}`);
-      setAllErrors((prev) => prev.filter((error) => error.code !== code));
-      if (activeCode === code) {
-        setActiveCode("");
+      await api.delete(`/error-code/${uuid}`);
+
+      setListGroups((prev) => prev.filter((element) => element.id !== uuid));
+
+      if (activeId === uuid) {
+        setActiveId("");
       }
+
       addMessage("Error code deleted", "succes");
     } catch (err) {
       console.log(err);
@@ -96,10 +100,13 @@ export default function ErrorCodeHome() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <AddErrorCode
-          allErrors={allErrors}
+        <AddGroupDoc
+          listGroups={listGroups}
           onClose={handleClose}
-          onSuccess={loadData}
+          onSuccess={() => {
+            handleClose();
+            loadData();
+          }}
         />
       </Modal>
 
@@ -126,7 +133,7 @@ export default function ErrorCodeHome() {
           </Link>
 
           <Button variant="contained" onClick={handleOpen}>
-            add new Error
+            add new Group
           </Button>
 
           <Button variant="contained" onClick={handleDownloadJson}>
@@ -142,12 +149,12 @@ export default function ErrorCodeHome() {
           maxHeight={"100%"}
           overflow={"auto"}
         >
-          <ShowListErros
+          {/* <ShowListErros
             allErrors={allErrors}
             activeCode={activeCode}
             onSelect={handleSelect}
             onDelet={handleDelete}
-          />
+          /> */}
         </Grid>
 
         <Grid
@@ -157,9 +164,9 @@ export default function ErrorCodeHome() {
           maxHeight={"100%"}
           overflow={"auto"}
         >
-          {activeCode != "" && (
+          {/* {activeCode != "" && (
             <EditErrorCode onUpdate={loadData} code={activeCode} />
-          )}
+          )} */}
         </Grid>
       </Grid>
     </Box>
