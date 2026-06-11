@@ -12,6 +12,8 @@ import Link from "next/link";
 import { GroupDocType } from "./documentsType";
 import { backendUrl } from "../constant";
 import AddGroupDoc from "./addGroupDoc";
+import ShowListGroupDoc from "./listGroups";
+import EditGroupDoc from "./editGroupDoc";
 
 export default function ErrorCodeHome() {
   const addMessage = useSnackBarError((state) => state.addMessage);
@@ -70,7 +72,7 @@ export default function ErrorCodeHome() {
 
   const handleDelete = async (uuid: string) => {
     try {
-      await api.delete(`/error-code/${uuid}`);
+      await api.delete(`/documents/${uuid}`);
 
       setListGroups((prev) => prev.filter((element) => element.id !== uuid));
 
@@ -149,12 +151,12 @@ export default function ErrorCodeHome() {
           maxHeight={"100%"}
           overflow={"auto"}
         >
-          {/* <ShowListErros
-            allErrors={allErrors}
-            activeCode={activeCode}
-            onSelect={handleSelect}
+          <ShowListGroupDoc
+            listGroups={listGroups}
+            activeId={activeId}
             onDelet={handleDelete}
-          /> */}
+            onSelect={handleSelect}
+          />
         </Grid>
 
         <Grid
@@ -164,9 +166,9 @@ export default function ErrorCodeHome() {
           maxHeight={"100%"}
           overflow={"auto"}
         >
-          {/* {activeCode != "" && (
-            <EditErrorCode onUpdate={loadData} code={activeCode} />
-          )} */}
+          {activeId != "" && (
+            <EditGroupDoc onUpdate={loadData} activeId={activeId} />
+          )}
         </Grid>
       </Grid>
     </Box>

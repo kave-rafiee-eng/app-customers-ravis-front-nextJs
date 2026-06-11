@@ -2,15 +2,15 @@ import { DescriptionType } from "../tree/type/menu-type";
 
 export type pdfFileType = {
   name: DescriptionType;
-  fileName: String;
+  fileName: string;
 };
 export type GroupDocType = {
   id: string;
   category: DescriptionType;
-  files: pdfFileType[] | null;
+  files: pdfFileType[];
 };
 
 export type CreateGroupDocType = {
   category: DescriptionType;
-  files: pdfFileType[] | null;
+  files: pdfFileType[];
 };

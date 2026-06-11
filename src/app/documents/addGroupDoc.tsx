@@ -80,7 +80,7 @@ export default function AddGroupDoc({
 
     const payload: CreateGroupDocType = {
       category: emptyDescription,
-      files: null,
+      files: [],
     };
 
     setSaving(true);
