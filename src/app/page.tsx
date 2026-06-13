@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Box,
@@ -16,6 +17,15 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import type { SvgIconComponent } from "@mui/icons-material";
+import React from "react";
+import axios from "axios";
+import { backendUrl } from "./constant";
+import { useBaseUiId } from "@base-ui/react/internals/useBaseUiId";
+import { randomInt, randomUUID } from "crypto";
+import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
+const api = axios.create({
+  baseURL: backendUrl,
+});
 
 type Section = {
   title: string;
@@ -53,6 +63,13 @@ const appSections: Section[] = [
     href: "documents",
     icon: PictureAsPdfIcon,
     accent: "#B4E309",
+  },
+  {
+    title: "Phonebook",
+    description: "edit name phone description",
+    href: "phonebook",
+    icon: ContactPhoneIcon,
+    accent: "#2E5A6F",
   },
 ];
 
@@ -139,6 +156,42 @@ function SectionGroup({
 }
 
 export default function Home() {
+  const [lastUpdate, setLastUpdate] = React.useState<string>("");
+  const [updated, setUpdated] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    getLastUpdate();
+  }, []);
+
+  async function getLastUpdate() {
+    try {
+      const res = await api.get("/version");
+      setLastUpdate(res.data);
+    } catch (err) {}
+  }
+
+  function generateRandomString(length: number) {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  async function updateVersion() {
+    console.log(generateRandomString(10));
+    try {
+      const res = await api.post(`/version/${generateRandomString(10)}`);
+      setLastUpdate(res.data);
+      setUpdated(true);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <Box
       // dir="rtl"
@@ -165,6 +218,13 @@ export default function Home() {
             <Typography variant="h6" sx={{ opacity: 0.85, fontWeight: 400 }}>
               first page
             </Typography>
+            <Button
+              variant="contained"
+              color={updated ? "secondary" : "warning"}
+              onClick={updateVersion}
+            >
+              lastUpdate : {lastUpdate}
+            </Button>
           </Stack>
         </Container>
       </Box>

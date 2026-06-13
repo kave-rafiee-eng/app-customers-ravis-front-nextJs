@@ -65,6 +65,7 @@ export default function EditGroupDoc({ onUpdate, activeId }: propsType) {
   const addMessage = useSnackBarError((state) => state.addMessage);
   const [GroupDoc, setGroupDoc] = React.useState<GroupDocType | null>();
   const [saving, setSaving] = React.useState(false);
+
   const [translate, SetTranslate] = React.useState(true);
   const [translateProgress, setTranslateProgress] = React.useState(0);
   const translateTotalStep = React.useRef(0);

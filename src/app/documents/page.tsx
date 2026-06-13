@@ -37,7 +37,6 @@ export default function ErrorCodeHome() {
         return response.data;
       });
       console.log("get List documents");
-      console.log(response.data);
     } catch (err) {
       console.log(err);
     }
