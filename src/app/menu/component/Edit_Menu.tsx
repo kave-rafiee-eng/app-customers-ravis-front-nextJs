@@ -5,6 +5,7 @@ import {
   DescriptionType,
   menuType,
   MiniDescriptionType,
+  settingMultyGroupType,
   settingMultySelectType,
   settingOneParameterType,
   settingOneSelectType,
@@ -34,6 +35,7 @@ import saveAndCollectMenu from "../saveAndCollectMenu/saveAndCollectMenu";
 import { checkTypeMenu } from "../type/checkTypeMenu";
 import EditSettingOneSelect from "./Edit_oneSelect";
 import EditSettingMultySelect from "./Edit_multiSelect";
+import EditSubMenu from "./Edit_subMenu";
 
 type EditMenuPropsType = {
   idEdit: string;
@@ -42,6 +44,56 @@ type EditMenuPropsType = {
 
 function findMenuById(id: string, menus: menuType[]): menuType | undefined {
   return menus.find((menu) => menu.id === id);
+}
+
+const emptyDescription: DescriptionType = {
+  english: "",
+  persian: "",
+  arabic: "",
+  turkish: "",
+  russian: "",
+  german: "",
+};
+
+const emptyMiniDescription: MiniDescriptionType = {
+  english: "",
+  persian: "",
+};
+
+function createEmptyGroupItem(
+  existingGroup: settingMultyGroupType[],
+  activeIndex: number,
+): settingMultyGroupType {
+  const activeItem = existingGroup[activeIndex];
+
+  if (activeItem?.settingOneSelect) {
+    return {
+      settingOneSelect: {
+        default: 0,
+        address: 0,
+        label: "new item",
+        options: [],
+        description: { ...emptyDescription },
+        additional_description_for_ai_assistant: { ...emptyMiniDescription },
+      },
+    };
+  }
+
+  return {
+    settingOneParameter: {
+      address: 0,
+      default: 0,
+      offset: 0,
+      addition: 0,
+      unit: "",
+      factor: 0,
+      minValue: 0,
+      maxValue: 0,
+      label: "new item",
+      description: { ...emptyDescription },
+      additional_description_for_ai_assistant: { ...emptyMiniDescription },
+    },
+  };
 }
 
 export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
@@ -53,6 +105,7 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
   const [saveing, setSaveing] = React.useState(false);
   const [activeIndexGroup, setActiveIndexGroup] = React.useState(0);
   const addMessage = useSnackBarError((state) => state.addMessage);
+  const setCurrentMenuId = useMenuStore((state) => state.setCurrentMenuId);
 
   useEffect(() => {
     async function getMenu(id: string) {
@@ -67,9 +120,13 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
       }
     }
     getMenu(idEdit);
+    setActiveIndexGroup(0);
+    setCurrentMenuId(idEdit);
   }, [idEdit]);
 
   const navigations = React.useMemo(() => {
+    const setAllMenus = useMenuStore((state) => state.setAllMenus);
+    setAllMenus(allMenus);
     const result: string[][] = [];
     function findPaths(menuId: string, path: string[] = []) {
       const menu = findMenuById(menuId, allMenus);
@@ -101,7 +158,8 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     if (
       menuTypeChecked === typeMenuEnum.SETTING_ON_PARAMETER ||
       menuTypeChecked === typeMenuEnum.SETTING_ON_SELECT ||
-      menuTypeChecked === typeMenuEnum.SETTING_MULTY_SELECT
+      menuTypeChecked === typeMenuEnum.SETTING_MULTY_SELECT ||
+      menuTypeChecked == typeMenuEnum.SUBMENU
     ) {
       initStore();
     }
@@ -126,11 +184,59 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
       } catch (err) {
         addMessage("error", "error");
       }
+    } else if (menuTypeChecked === typeMenuEnum.SETTING_MULTY_GROUP) {
+      try {
+        setMenuState(await saveAndCollectMenu(menuState, activeIndexGroup));
+        addMessage("saved .", "succes");
+      } catch (err) {
+        addMessage("error", "error");
+      }
     } else {
       addMessage("unsupported menu type", "error");
     }
 
     setSaveing(false);
+  };
+
+  const handleAddGroupItem = () => {
+    if (!menuState?.data.settingMultyGroup) return;
+
+    const nextGroup = [
+      ...menuState.data.settingMultyGroup,
+      createEmptyGroupItem(menuState.data.settingMultyGroup, activeIndexGroup),
+    ];
+    const nextIndex = nextGroup.length - 1;
+
+    setMenuState({
+      ...menuState,
+      data: {
+        ...menuState.data,
+        settingMultyGroup: nextGroup,
+      },
+    });
+    setActiveIndexGroup(nextIndex);
+  };
+
+  const handleDeleteGroupItem = () => {
+    if (!menuState?.data.settingMultyGroup) return;
+
+    const group = menuState.data.settingMultyGroup;
+    if (group.length <= 1) {
+      addMessage("cannot delete last item", "error");
+      return;
+    }
+
+    const nextGroup = group.filter((_, index) => index !== activeIndexGroup);
+    const nextIndex = Math.min(activeIndexGroup, nextGroup.length - 1);
+
+    setMenuState({
+      ...menuState,
+      data: {
+        ...menuState.data,
+        settingMultyGroup: nextGroup,
+      },
+    });
+    setActiveIndexGroup(nextIndex);
   };
 
   let activeEdit_oneSelect: boolean = false;
@@ -199,6 +305,26 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
             </Select>
           </FormControl>
         )}
+        {checkTypeMenu(menuState) == typeMenuEnum.SETTING_MULTY_GROUP && (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleAddGroupItem}
+              sx={{ background: "white", color: "#456882" }}
+            >
+              addItem
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              color="error"
+              onClick={handleDeleteGroupItem}
+            >
+              deleteItem
+            </Button>
+          </>
+        )}
 
         <FormControl color="primary">
           <InputLabel id="demo-simple-select-label">navigation</InputLabel>
@@ -246,6 +372,8 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
       {checkTypeMenu(menuState) == typeMenuEnum.SETTING_MULTY_SELECT && (
         <EditSettingMultySelect />
       )}
+
+      {checkTypeMenu(menuState) == typeMenuEnum.SUBMENU && <EditSubMenu />}
 
       {activeEdit_oneParameter && <EditSettingOneParameter />}
 

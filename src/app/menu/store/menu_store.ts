@@ -1,8 +1,10 @@
 import { create } from "zustand";
 import {
   DescriptionType,
+  menuType,
   MiniDescriptionType,
   optionType,
+  ParanetIdLableType,
 } from "../type/menu_type";
 
 type structureOneParameterType = {
@@ -28,7 +30,17 @@ type structureMultySelectType = {
   addresses: number[];
 };
 
+type structurSubMenuType = {
+  lable: string;
+};
+
 type menuStorType = {
+  currentMenuId: string;
+  setCurrentMenuId: (currentMenuId: string) => void;
+
+  structurSubMebu: structurSubMenuType;
+  setStructurSubMebu: (structurSubMebu: structurSubMenuType) => void;
+
   description: DescriptionType;
   setDescription: (description: DescriptionType) => void;
 
@@ -53,6 +65,12 @@ type menuStorType = {
   setStructureMultySelect: (
     structureMultySelect: structureMultySelectType,
   ) => void;
+
+  parent: ParanetIdLableType[];
+  setParent: (parent: ParanetIdLableType[]) => void;
+
+  allMenus: menuType[];
+  setAllMenus: (allMenus: menuType[]) => void;
 };
 
 const emptyDescription: DescriptionType = {
@@ -93,6 +111,14 @@ const emptyStructureMultySelect: structureMultySelectType = {
 };
 
 export const useMenuStore = create<menuStorType>((set) => ({
+  currentMenuId: "0",
+  setCurrentMenuId: (currentMenuId) => set({ currentMenuId }),
+  structurSubMebu: {
+    lable: "",
+  },
+  setStructurSubMebu: (structurSubMebu) => set({ structurSubMebu }),
+  allMenus: [],
+  setAllMenus: (allMenus) => set({ allMenus }),
   description: { ...emptyDescription },
   setDescription: (description) => set({ description }),
 
@@ -115,4 +141,7 @@ export const useMenuStore = create<menuStorType>((set) => ({
   structureMultySelect: { ...emptyStructureMultySelect },
   setStructureMultySelect: (structureMultySelect) =>
     set({ structureMultySelect }),
+
+  parent: [],
+  setParent: (parent) => set({ parent }),
 }));

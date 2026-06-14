@@ -21,6 +21,7 @@ export async function saveAndCollectMenu_settingOneParameter(
 
   const updateMenu: menuType = {
     ...menu,
+    parentId: store.parent,
     data: {
       ...menu.data,
       settingOneParameter: {
@@ -51,6 +52,7 @@ export async function saveAndCollectMenu_settingOneSelect(
 
   const updateMenu: menuType = {
     ...menu,
+    parentId: store.parent,
     data: {
       ...menu.data,
       settingOneSelect: {
@@ -76,6 +78,7 @@ export async function saveAndCollectMenu_settingMultySelect(
 
   const updateMenu: menuType = {
     ...menu,
+    parentId: store.parent,
     data: {
       ...menu.data,
       settingMultySelect: {
@@ -93,8 +96,67 @@ export async function saveAndCollectMenu_settingMultySelect(
   return postMenu(updateMenu);
 }
 
+export async function saveAndCollectMenu_settingMultyGroup(
+  menu: menuType,
+  activeItemIndex: number,
+): Promise<menuType> {
+  const store = useMenuStore.getState();
+  const group = [...(menu.data.settingMultyGroup ?? [])];
+
+  if (activeItemIndex < 0 || activeItemIndex >= group.length) {
+    throw new Error("invalid group item index");
+  }
+
+  const activeItem = { ...group[activeItemIndex] };
+
+  if (activeItem.settingOneParameter) {
+    const structure = store.structureOneParameter;
+    activeItem.settingOneParameter = {
+      ...activeItem.settingOneParameter,
+      description: store.description,
+      additional_description_for_ai_assistant: store.descriptionAi,
+      address: structure.address,
+      default: structure.default,
+      offset: structure.offset,
+      addition: structure.addition,
+      unit: structure.unit,
+      factor: structure.factor,
+      minValue: structure.minValue,
+      maxValue: structure.maxValue,
+      label: structure.label,
+    };
+  }
+
+  if (activeItem.settingOneSelect) {
+    const structure = store.structureOneSelect;
+    activeItem.settingOneSelect = {
+      ...activeItem.settingOneSelect,
+      description: store.description,
+      additional_description_for_ai_assistant: store.descriptionAi,
+      options: store.options,
+      default: structure.default,
+      address: structure.address,
+      label: structure.label,
+    };
+  }
+
+  group[activeItemIndex] = activeItem;
+
+  const updateMenu: menuType = {
+    ...menu,
+    parentId: store.parent,
+    data: {
+      ...menu.data,
+      settingMultyGroup: group,
+    },
+  };
+
+  return postMenu(updateMenu);
+}
+
 export default async function saveAndCollectMenu(
   menu: menuType,
+  activeItemIndex?: number,
 ): Promise<menuType> {
   const type = checkTypeMenu(menu);
 
@@ -107,6 +169,12 @@ export default async function saveAndCollectMenu(
 
     case typeMenuEnum.SETTING_MULTY_SELECT:
       return saveAndCollectMenu_settingMultySelect(menu);
+
+    case typeMenuEnum.SETTING_MULTY_GROUP:
+      if (activeItemIndex === undefined) {
+        throw new Error("activeItemIndex is required for SETTING_MULTY_GROUP");
+      }
+      return saveAndCollectMenu_settingMultyGroup(menu, activeItemIndex);
 
     default:
       throw new Error("unsupported menu type");

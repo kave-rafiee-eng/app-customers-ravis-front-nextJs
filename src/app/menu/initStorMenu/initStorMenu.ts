@@ -50,6 +50,7 @@ export function resetMenuStore() {
       defaults: [],
       addresses: [],
     },
+    parent: [],
   });
 }
 
@@ -106,6 +107,15 @@ export function initStoreMenu_settingMultySelect(
   });
 }
 
+export function initStoreMenu_subMenu(menu: menuType) {
+  resetMenuStore();
+  useMenuStore.setState({
+    description: menu.description,
+    descriptionAi: menu.additional_description_for_ai_assistant,
+    parent: menu.parentId,
+  });
+}
+
 export function initStoreMenu(menu: menuType) {
   const type = checkTypeMenu(menu);
 
@@ -122,9 +132,14 @@ export function initStoreMenu(menu: menuType) {
       initStoreMenu_settingMultySelect(menu.data.settingMultySelect!);
       break;
 
+    case typeMenuEnum.SUBMENU:
+      initStoreMenu_subMenu(menu);
+      break;
     default:
       resetMenuStore();
   }
+
+  useMenuStore.setState({ parent: menu.parentId });
 }
 
 export function initStoreMenuGroup(menu: menuType, activeItemIndex: number) {
@@ -139,6 +154,8 @@ export function initStoreMenuGroup(menu: menuType, activeItemIndex: number) {
   if (activeItem.settingOneSelect) {
     initStoreMenu_settingOneSelect(activeItem.settingOneSelect);
   }
+
+  useMenuStore.setState({ parent: menu.parentId });
 }
 
 /** @deprecated use initStoreMenu_settingOneParameter */

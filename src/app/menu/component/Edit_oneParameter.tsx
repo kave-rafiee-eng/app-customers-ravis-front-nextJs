@@ -31,13 +31,16 @@ import axios from "axios";
 import EditDescription from "../subComponent/Edit_description";
 import EditDescriptionAi from "../subComponent/Edit_descriptionAi";
 import EditStructur_settingOneParameter from "../subComponent/EditStructur_settingOneParameter";
+import EditParent from "../subComponent/Edit_parent";
 
 enum SettingTab {
   Description = "Description",
   Structure = "Structure",
+  Parent = "Parent",
 }
 
 type propsType = {};
+
 export default function EditSettingOneParameter({}: propsType) {
   const [tab, setTab] = React.useState<SettingTab>(SettingTab.Description);
 
@@ -57,6 +60,7 @@ export default function EditSettingOneParameter({}: propsType) {
         >
           <Tab value={SettingTab.Description} label="Description" />
           <Tab value={SettingTab.Structure} label="Structure" />
+          <Tab value={SettingTab.Parent} label="Parent" />
         </Tabs>
 
         <div
@@ -81,6 +85,17 @@ export default function EditSettingOneParameter({}: propsType) {
           }}
         >
           <EditStructur_settingOneParameter />
+        </div>
+        <div
+          hidden={tab !== SettingTab.Parent}
+          style={{
+            width: "100%",
+            height: "80%",
+            maxHeight: "80%",
+            overflowY: "auto",
+          }}
+        >
+          <EditParent />
         </div>
       </Box>
     </>
