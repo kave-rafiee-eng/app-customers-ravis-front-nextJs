@@ -63,6 +63,7 @@ export default function EditSettingOneSelect({}: propsType) {
           <Tab value={SettingTab.Description} label="Description" />
           <Tab value={SettingTab.Structure} label="Structure" />
           <Tab value={SettingTab.Options} label="Options" />
+          <Tab value={SettingTab.Parent} label="Parent" />
         </Tabs>
 
         <div

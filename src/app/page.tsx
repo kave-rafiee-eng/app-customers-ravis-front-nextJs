@@ -37,9 +37,9 @@ type Section = {
 
 const appSections: Section[] = [
   {
-    title: "Advance Menus",
+    title: "Advance Menu",
     description: "Create and edit nested menu structures",
-    href: "menus",
+    href: "menu",
     icon: AccountTreeIcon,
     accent: "#1B3C53",
   },

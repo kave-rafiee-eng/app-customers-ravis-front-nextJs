@@ -35,6 +35,8 @@ type structurSubMenuType = {
 };
 
 type menuStorType = {
+  refreshTick: number;
+  refreshMenu: () => void;
   currentMenuId: string;
   setCurrentMenuId: (currentMenuId: string) => void;
 
@@ -111,6 +113,8 @@ const emptyStructureMultySelect: structureMultySelectType = {
 };
 
 export const useMenuStore = create<menuStorType>((set) => ({
+  refreshTick: 0,
+  refreshMenu: () => set((state) => ({ refreshTick: state.refreshTick + 1 })),
   currentMenuId: "0",
   setCurrentMenuId: (currentMenuId) => set({ currentMenuId }),
   structurSubMebu: {

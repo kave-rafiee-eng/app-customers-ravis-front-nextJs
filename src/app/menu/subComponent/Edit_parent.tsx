@@ -38,6 +38,7 @@ export default function EditParent({}: propsType) {
 
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedMenu, setSelectedMenu] = React.useState<menuType | null>(null);
+  const [label, setLabel] = React.useState<string>("");
 
   const currentMenuId = useMenuStore((state) => state.currentMenuId);
 
@@ -54,6 +55,11 @@ export default function EditParent({}: propsType) {
   const handleOpenModal = () => {
     setSelectedMenu(null);
     setOpenModal(true);
+    fineMenuName;
+    const founded = allMenus.find((menu) => menu.id == currentMenuId);
+    if (founded) {
+      setLabel(founded.lable!);
+    }
   };
 
   const handleCloseModal = () => {
@@ -76,7 +82,7 @@ export default function EditParent({}: propsType) {
       ...parent,
       {
         id: selectedMenu.id,
-        label: selectedMenu.lable ?? selectedMenu.id,
+        label: label,
       },
     ]);
     handleCloseModal();
@@ -132,6 +138,15 @@ export default function EditParent({}: propsType) {
       <Modal open={openModal} onClose={handleCloseModal}>
         <Stack spacing={2} sx={style}>
           <Typography variant="h6">Add Parent (Submenu)</Typography>
+
+          <TextField
+            size="small"
+            label="label"
+            value={label}
+            onChange={(event) => {
+              setLabel(event.target.value);
+            }}
+          />
 
           <Autocomplete
             options={submenuCandidates}

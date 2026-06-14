@@ -106,6 +106,7 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
   const [activeIndexGroup, setActiveIndexGroup] = React.useState(0);
   const addMessage = useSnackBarError((state) => state.addMessage);
   const setCurrentMenuId = useMenuStore((state) => state.setCurrentMenuId);
+  const refreshMenu = useMenuStore((state) => state.refreshMenu);
 
   useEffect(() => {
     async function getMenu(id: string) {
@@ -181,6 +182,10 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
       try {
         setMenuState(await saveAndCollectMenu(menuState));
         addMessage("saved .", "succes");
+        setTimeout(() => {
+          refreshMenu();
+        }, 1000);
+        //
       } catch (err) {
         addMessage("error", "error");
       }
@@ -188,6 +193,7 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
       try {
         setMenuState(await saveAndCollectMenu(menuState, activeIndexGroup));
         addMessage("saved .", "succes");
+        refreshMenu();
       } catch (err) {
         addMessage("error", "error");
       }
