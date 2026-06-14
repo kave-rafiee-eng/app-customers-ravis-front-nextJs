@@ -26,7 +26,7 @@ export function checkTypeMenu(menu: menuType | undefined): typeMenuEnum {
         : typeMenuEnum.UNDEFINDED;
 
     case typeMenuEnum.SETTING_MULTY_GROUP:
-      return data.settingMultyGroup?.length
+      return data.settingMultyGroup
         ? typeMenuEnum.SETTING_MULTY_GROUP
         : typeMenuEnum.UNDEFINDED;
 

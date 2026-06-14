@@ -30,11 +30,13 @@ import {
 import axios from "axios";
 import EditDescription from "../subComponent/Edit_description";
 import EditDescriptionAi from "../subComponent/Edit_descriptionAi";
-import EditStructur_settingOneParameter from "../subComponent/EditStructur_settingOneParameter";
+import EditStructur_settingOneSelect from "../subComponent/EditStructur_settingOneSelect";
+import EditOptions from "../subComponent/Edit_options";
 
 enum SettingTab {
   Description = "Description",
   Structure = "Structure",
+  Options = "Options",
 }
 
 type propsType = {};
@@ -57,6 +59,7 @@ export default function EditSettingOneSelect({}: propsType) {
         >
           <Tab value={SettingTab.Description} label="Description" />
           <Tab value={SettingTab.Structure} label="Structure" />
+          <Tab value={SettingTab.Options} label="Options" />
         </Tabs>
 
         <div
@@ -79,7 +82,21 @@ export default function EditSettingOneSelect({}: propsType) {
             maxHeight: "80%",
             overflowY: "auto",
           }}
-        ></div>
+        >
+          <EditStructur_settingOneSelect />
+        </div>
+
+        <div
+          hidden={tab !== SettingTab.Options}
+          style={{
+            width: "100%",
+            height: "80%",
+            maxHeight: "80%",
+            overflowY: "auto",
+          }}
+        >
+          <EditOptions editItem={false} />
+        </div>
       </Box>
     </>
   );

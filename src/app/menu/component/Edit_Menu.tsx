@@ -26,10 +26,14 @@ import { useSnackBarError } from "../../stors/snakebar-store";
 import { API_MENU, END_POINT_MENU_ADVANCE } from "../constant/apiUrl";
 import EditSettingOneParameter from "./Edit_oneParameter";
 import { useMenuStore } from "../store/menu_store";
-import initStoreMenu from "../initStorMenu/initStorMenu";
+import {
+  initStoreMenu,
+  initStoreMenuGroup,
+} from "../initStorMenu/initStorMenu";
 import saveAndCollectMenu from "../saveAndCollectMenu/saveAndCollectMenu";
 import { checkTypeMenu } from "../type/checkTypeMenu";
 import EditSettingOneSelect from "./Edit_oneSelect";
+import EditSettingMultySelect from "./Edit_multiSelect";
 
 type EditMenuPropsType = {
   idEdit: string;
@@ -47,7 +51,7 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
 
   const [menuState, setMenuState] = React.useState<menuType>();
   const [saveing, setSaveing] = React.useState(false);
-
+  const [activeIndexGroup, setActiveIndexGroup] = React.useState(0);
   const addMessage = useSnackBarError((state) => state.addMessage);
 
   useEffect(() => {
@@ -88,9 +92,23 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     if (menuState == undefined) return;
     initStoreMenu(menuState);
   };
+  const initStoreGroup = () => {
+    if (menuState == undefined) return;
+    initStoreMenuGroup(menuState, activeIndexGroup);
+  };
   React.useEffect(() => {
-    initStore();
-  }, [menuState]);
+    const menuTypeChecked = checkTypeMenu(menuState);
+    if (
+      menuTypeChecked === typeMenuEnum.SETTING_ON_PARAMETER ||
+      menuTypeChecked === typeMenuEnum.SETTING_ON_SELECT ||
+      menuTypeChecked === typeMenuEnum.SETTING_MULTY_SELECT
+    ) {
+      initStore();
+    }
+    if (menuTypeChecked == typeMenuEnum.SETTING_MULTY_GROUP) {
+      initStoreGroup();
+    }
+  }, [menuState, activeIndexGroup]);
 
   let handleSava = async () => {
     if (menuState == undefined) return;
@@ -115,6 +133,19 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     setSaveing(false);
   };
 
+  let activeEdit_oneSelect: boolean = false;
+  let activeEdit_oneParameter: boolean = false;
+
+  if (checkTypeMenu(menuState) == typeMenuEnum.SETTING_MULTY_GROUP) {
+    if (
+      menuState?.data.settingMultyGroup![activeIndexGroup].settingOneParameter
+    )
+      activeEdit_oneParameter = true;
+
+    if (menuState?.data.settingMultyGroup![activeIndexGroup].settingOneSelect)
+      activeEdit_oneSelect = true;
+  }
+
   return (
     <Stack direction={"column"} spacing={1} sx={{ height: "100%" }}>
       <Stack
@@ -136,31 +167,38 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
           {menuState?.lable}
         </Typography>
 
-        {/* {multyGroupSelect.length ? (
+        {checkTypeMenu(menuState) == typeMenuEnum.SETTING_MULTY_GROUP && (
           <FormControl color="primary">
             <InputLabel id="demo-simple-select-label">Items</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               label="Navgation"
-              value={itemOfMulty}
+              value={activeIndexGroup}
               size="small"
               color="primary"
               sx={{ background: "white" }}
               onChange={(event) => {
-                setItemOfMulty(Number(event.target.value));
+                setActiveIndexGroup(Number(event.target.value));
               }}
             >
-              {multyGroupSelect.map((name, index) => (
-                <MenuItem key={index} value={index}>
-                  {name}
-                </MenuItem>
-              ))}
+              {menuState!.data.settingMultyGroup!.map(
+                (settingMultyGroup, index) => {
+                  let name = "";
+                  if (settingMultyGroup.settingOneParameter)
+                    name = settingMultyGroup.settingOneParameter.label;
+                  if (settingMultyGroup.settingOneSelect)
+                    name = settingMultyGroup.settingOneSelect.label;
+                  return (
+                    <MenuItem key={index} value={index}>
+                      {name}
+                    </MenuItem>
+                  );
+                },
+              )}
             </Select>
           </FormControl>
-        ) : (
-          ""
-        )} */}
+        )}
 
         <FormControl color="primary">
           <InputLabel id="demo-simple-select-label">navigation</InputLabel>
@@ -204,6 +242,14 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
       {checkTypeMenu(menuState) == typeMenuEnum.SETTING_ON_SELECT && (
         <EditSettingOneSelect />
       )}
+
+      {checkTypeMenu(menuState) == typeMenuEnum.SETTING_MULTY_SELECT && (
+        <EditSettingMultySelect />
+      )}
+
+      {activeEdit_oneParameter && <EditSettingOneParameter />}
+
+      {activeEdit_oneSelect && <EditSettingOneSelect />}
     </Stack>
   );
 }

@@ -3,10 +3,12 @@
 import React from "react";
 import { MiniDescriptionType, optionType } from "../type/menu_type";
 import {
+  Button,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Stack,
   TextField,
 } from "@mui/material";
 import { TableBasic, TableBasicProps } from "../../tree/component/TableBasic";
@@ -20,6 +22,14 @@ type optionsRow = {
   id: number;
   descibe: string;
   name: string;
+};
+
+const emptyOption: optionType = {
+  value: "",
+  description: {
+    english: "",
+    persian: "",
+  },
 };
 
 export default function EditOptions({ editItem }: propsType) {
@@ -38,7 +48,13 @@ export default function EditOptions({ editItem }: propsType) {
     index: number,
     updater: (option: optionType) => optionType,
   ) => {
-    setOptionsList(options.map((option, i) => (i === index ? updater(option) : option)));
+    setOptionsList(
+      options.map((option, i) => (i === index ? updater(option) : option)),
+    );
+  };
+
+  const handleAddOption = () => {
+    setOptionsList([...options, { ...emptyOption }]);
   };
 
   const tableData: optionsRow[] = options.map((value, index) => ({
@@ -49,6 +65,24 @@ export default function EditOptions({ editItem }: propsType) {
 
   const propsTable: TableBasicProps<optionsRow> = {
     columns: [
+      {
+        Width: "5%",
+        id: "id",
+        label: "delet ",
+        render: (row) => {
+          return (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                setOptionsList(options.filter((v, i) => i != row.id));
+              }}
+            >
+              delet
+            </Button>
+          );
+        },
+      },
       {
         id: "name",
         label: "name",
@@ -75,24 +109,33 @@ export default function EditOptions({ editItem }: propsType) {
         id: "descibe",
         label: () => {
           return (
-            <FormControl sx={{ width: "100%", minWidth: 120 }}>
-              <InputLabel id="option-language-label">language</InputLabel>
-              <Select
+            <Stack direction={"row"} spacing={1}>
+              <FormControl sx={{ width: "100%", minWidth: 120 }}>
+                <InputLabel id="option-language-label">language</InputLabel>
+                <Select
+                  size="small"
+                  labelId="option-language-label"
+                  id="option-language-select"
+                  value={optionLanguage}
+                  label="language"
+                  onChange={(event) => {
+                    setOptionLanguage(
+                      event.target.value as "english" | "persian",
+                    );
+                  }}
+                >
+                  <MenuItem value="english">english</MenuItem>
+                  <MenuItem value="persian">persian</MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
                 size="small"
-                labelId="option-language-label"
-                id="option-language-select"
-                value={optionLanguage}
-                label="language"
-                onChange={(event) => {
-                  setOptionLanguage(
-                    event.target.value as "english" | "persian",
-                  );
-                }}
+                onClick={handleAddOption}
               >
-                <MenuItem value="english">english</MenuItem>
-                <MenuItem value="persian">persian</MenuItem>
-              </Select>
-            </FormControl>
+                add option
+              </Button>
+            </Stack>
           );
         },
         render: (row) => {
@@ -121,10 +164,12 @@ export default function EditOptions({ editItem }: propsType) {
   };
 
   return (
-    <TableBasic
-      height="100%"
-      columns={propsTable.columns}
-      tableData={propsTable.tableData}
-    />
+    <Stack spacing={1} sx={{ height: "100%" }}>
+      <TableBasic
+        height="100%"
+        columns={propsTable.columns}
+        tableData={propsTable.tableData}
+      />
+    </Stack>
   );
 }

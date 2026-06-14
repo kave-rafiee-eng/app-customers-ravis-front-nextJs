@@ -106,7 +106,7 @@ export function initStoreMenu_settingMultySelect(
   });
 }
 
-export default function initStoreMenu(menu: menuType) {
+export function initStoreMenu(menu: menuType) {
   const type = checkTypeMenu(menu);
 
   switch (type) {
@@ -127,5 +127,20 @@ export default function initStoreMenu(menu: menuType) {
   }
 }
 
+export function initStoreMenuGroup(menu: menuType, activeItemIndex: number) {
+  const settingMultySelect = menu.data.settingMultyGroup!;
+
+  const activeItem = settingMultySelect[activeItemIndex];
+
+  if (activeItem.settingOneParameter) {
+    initStoreMenu_settingOneParameter(activeItem.settingOneParameter);
+  }
+
+  if (activeItem.settingOneSelect) {
+    initStoreMenu_settingOneSelect(activeItem.settingOneSelect);
+  }
+}
+
 /** @deprecated use initStoreMenu_settingOneParameter */
-export const initSoreMenu_settingOneParameter = initStoreMenu_settingOneParameter;
+// export const initSoreMenu_settingOneParameter =
+//   initStoreMenu_settingOneParameter;
