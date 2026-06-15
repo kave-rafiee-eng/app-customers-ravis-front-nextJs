@@ -1,28 +1,32 @@
-import { error } from "console";
 import { create } from "zustand";
 
 type messageType = {
   type: "error" | "succes";
   text: string;
+  autoHideDuration?: number | null;
 };
+
 type snackbarStore = {
   messages: messageType[];
-  addMessage: (text: string, type: "error" | "succes") => void;
+  addMessage: (
+    text: string,
+    type: "error" | "succes",
+    autoHideDuration?: number | null,
+  ) => void;
   deletMessage: (id: number) => void;
 };
 
-export const useSnackBarError = create<snackbarStore>((set, get) => ({
+export const useSnackBarError = create<snackbarStore>((set) => ({
   messages: [],
-  addMessage: (text, type) => {
+  addMessage: (text, type, autoHideDuration) => {
     const newMess: messageType = {
       type,
       text,
+      autoHideDuration,
     };
-    set((pre) => {
-      return {
-        messages: [...pre.messages, newMess],
-      };
-    });
+    set((pre) => ({
+      messages: [...pre.messages, newMess],
+    }));
   },
 
   deletMessage: (id) => {

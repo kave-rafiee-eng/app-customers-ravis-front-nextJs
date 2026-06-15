@@ -18,42 +18,63 @@ const ACCENT = "#1B3C53";
 type maptype = {
   [key: string]: nodesType;
 };
-function convert(menuData: menuType[]) {
-  let map: maptype = {};
+function convert(menuData: menuType[]): nodesType[] {
+  let map: nodesType[] = [];
   let root: nodesType[] = [];
 
-  menuData.forEach((menu) => {
-    let label = "";
-    if (menu.parentId.length) {
-      label = menu.parentId[0].label;
-    } else label = menu.lable != undefined ? menu.lable : "no name";
-
-    map[menu.id] = {
-      id: menu.id,
-      //name: menu.lable != undefined ? menu.lable : "empty name",
-      name: label,
-      children: [],
-      type: menu.type === typeMenuEnum.SUBMENU ? "subMenu" : "setting",
-    };
-  });
-
-  menuData.forEach((menu) => {
-    if (menu.parentId.length == 0) {
-      if (menu.lable == "Main") root.push(map[menu.id]);
-      else root.push(map[menu.id]);
+  menuData.forEach((menu, index) => {
+    if (menu.parentId.length > 0) {
+      menu.parentId.forEach((parentId) => {
+        map.push({
+          idMenu: menu.id,
+          idTree: menu.id + parentId.id,
+          name: parentId.label,
+          idParent: parentId.id,
+          children: [],
+          type: menu.type === typeMenuEnum.SUBMENU ? "subMenu" : "setting",
+        });
+      });
     } else {
-      menu.parentId.forEach((parent) => {
-        map[parent.id].children.push({ ...map[menu.id] });
+      map.push({
+        idMenu: menu.id,
+        idTree: menu.id,
+        name: menu.lable!,
+        idParent: null,
+        children: [],
+        type: menu.type === typeMenuEnum.SUBMENU ? "subMenu" : "setting",
       });
     }
   });
+
+  map.forEach((menu) => {
+    if (menu.idParent == null) {
+      root.push(menu);
+    } else {
+      const founded = map.find((m) => m.idMenu == menu.idParent);
+      if (founded) founded.children.push(menu);
+      // map[menu.idParent].children.push(menu);
+    }
+  });
+
+  // menuData.forEach((menu) => {
+  //   if (menu.parentId.length == 0) {
+  //     if (menu.lable == "Main") root.push(map[menu.id]);
+  //     else root.push(map[menu.id]);
+  //   } else {
+  //     menu.parentId.forEach((parent) => {
+  //       map[parent.id].children.push({ ...map[menu.id] });
+  //     });
+  //   }
+  // });
 
   return root;
 }
 
 type nodesType = {
-  id: string;
+  idMenu: string;
+  idTree: string;
   name: string;
+  idParent: string | null;
   children: nodesType[];
   type: "subMenu" | "setting";
 };
@@ -75,7 +96,7 @@ function TreeNodeLabel({
 }) {
   const handleEditClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    onEdit(node.id);
+    onEdit(node.idMenu);
   };
 
   if (node.type === "subMenu") {
@@ -90,7 +111,7 @@ function TreeNodeLabel({
           py: 0.75,
           borderRadius: 1.5,
           bgcolor: isActive
-            ? "rgba(27, 60, 83, 0.12)"
+            ? "rgba(66, 14, 62, 0.12)"
             : "rgba(27, 60, 83, 0.06)",
           borderLeft: "3px solid",
           borderColor: isActive ? ACCENT : "rgba(27, 60, 83, 0.35)",
@@ -141,9 +162,9 @@ function TreeNodeLabel({
             opacity: isActive ? 1 : 0.5,
             ml: 0,
             color: ACCENT,
-            "&:hover": {
-              bgcolor: "rgba(27, 60, 83, 0.12)",
-            },
+            // "&:hover": {
+            //   bgcolor: "rgba(27, 60, 83, 0.12)",
+            // },
           }}
         >
           <EditOutlinedIcon fontSize="small" />
@@ -162,11 +183,11 @@ function TreeNodeLabel({
         px: 1,
         py: 0.5,
         borderRadius: 1.5,
-        bgcolor: isActive ? "rgba(27, 60, 83, 0.08)" : "transparent",
+        bgcolor: isActive ? "rgba(86, 14, 90, 0.08)" : "transparent",
         transition: "background-color 0.2s",
-        "&:hover": {
-          bgcolor: isActive ? "rgba(27, 60, 83, 0.1)" : "rgba(0, 0, 0, 0.04)",
-        },
+        // "&:hover": {
+        //   bgcolor: isActive ? "rgba(83, 27, 68, 0.1)" : "rgba(0, 0, 0, 0.04)",
+        // },
       }}
     >
       <TuneOutlinedIcon
@@ -193,7 +214,7 @@ function TreeNodeLabel({
         {node.name}
       </Button>
       <Chip
-        label={node.id}
+        label={node.idMenu}
         size="small"
         variant="outlined"
         sx={{
@@ -216,8 +237,10 @@ export default function MenuTreeView({
   const apiRef = useSimpleTreeViewApiRef();
 
   const treeData: nodesType = {
-    id: "node is",
+    idMenu: "",
     name: "Parent",
+    idParent: null,
+    idTree: "abcd",
     children: convert(menus),
     type: "subMenu",
   };
@@ -225,8 +248,8 @@ export default function MenuTreeView({
   const renderTree = (nodes: nodesType) => {
     return (
       <TreeItem
-        key={nodes.id}
-        itemId={nodes.id}
+        key={nodes.idTree}
+        itemId={nodes.idTree}
         sx={{
           "& .MuiTreeItem-content": {
             py: 0.25,
@@ -239,7 +262,7 @@ export default function MenuTreeView({
         label={
           <TreeNodeLabel
             node={nodes}
-            isActive={activeId === nodes.id}
+            isActive={activeId === nodes.idMenu}
             onEdit={handleEdit}
           />
         }

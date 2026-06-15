@@ -8,12 +8,14 @@ import EditDescription from "../subComponent/Edit_description";
 import EditDescriptionAi from "../subComponent/Edit_descriptionAi";
 import EditOptions from "../subComponent/Edit_options";
 import EditStructur_settingMultySelect from "../subComponent/EditStructur_settingMultySelect";
+import EditParent from "../subComponent/Edit_parent";
 
 enum SettingTab {
   Description = "Description",
   Structure = "Structure",
   Options = "Options",
   Items = "Items",
+  Parent = "Parent",
 }
 
 export default function EditSettingMultySelect() {
@@ -31,15 +33,19 @@ export default function EditSettingMultySelect() {
         textColor="secondary"
         indicatorColor="secondary"
       >
-        <Tab value={SettingTab.Description} label="Description" />
-        <Tab value={SettingTab.Structure} label="Structure" />
-        <Tab value={SettingTab.Options} label="Options" />
-        <Tab value={SettingTab.Items} label="Items" />
+        {Object.entries(SettingTab).map((v, index) => (
+          <Tab key={index} value={v[0]} label={v[1]} />
+        ))}
       </Tabs>
 
       <Box
         hidden={tab !== SettingTab.Description}
-        sx={{ width: "100%", height: "80%", maxHeight: "80%", overflowY: "auto" }}
+        sx={{
+          width: "100%",
+          height: "80%",
+          maxHeight: "80%",
+          overflowY: "auto",
+        }}
       >
         <EditDescription />
         <EditDescriptionAi />
@@ -47,23 +53,50 @@ export default function EditSettingMultySelect() {
 
       <Box
         hidden={tab !== SettingTab.Structure}
-        sx={{ width: "100%", height: "80%", maxHeight: "80%", overflowY: "auto" }}
+        sx={{
+          width: "100%",
+          height: "80%",
+          maxHeight: "80%",
+          overflowY: "auto",
+        }}
       >
         <EditStructur_settingMultySelect />
       </Box>
 
       <Box
         hidden={tab !== SettingTab.Options}
-        sx={{ width: "100%", height: "90%", maxHeight: "100%", overflowY: "auto" }}
+        sx={{
+          width: "100%",
+          height: "90%",
+          maxHeight: "100%",
+          overflowY: "auto",
+        }}
       >
         <EditOptions editItem={false} />
       </Box>
 
       <Box
         hidden={tab !== SettingTab.Items}
-        sx={{ width: "100%", height: "90%", maxHeight: "100%", overflowY: "auto" }}
+        sx={{
+          width: "100%",
+          height: "90%",
+          maxHeight: "100%",
+          overflowY: "auto",
+        }}
       >
         <EditOptions editItem={true} />
+      </Box>
+
+      <Box
+        hidden={tab !== SettingTab.Parent}
+        sx={{
+          width: "100%",
+          height: "90%",
+          maxHeight: "100%",
+          overflowY: "auto",
+        }}
+      >
+        <EditParent></EditParent>
       </Box>
     </Box>
   );

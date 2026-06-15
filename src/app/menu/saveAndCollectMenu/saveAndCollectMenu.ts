@@ -5,7 +5,7 @@ import { API_MENU, END_POINT_MENU_ADVANCE } from "../constant/apiUrl";
 
 async function postMenu(menu: menuType): Promise<menuType> {
   try {
-    const res = await API_MENU.post(END_POINT_MENU_ADVANCE, menu);
+    const res = await API_MENU.post(useMenuStore.getState().endPointMenu, menu);
     return res.data as menuType;
   } catch (err) {
     console.log(err);
@@ -17,11 +17,11 @@ export async function saveAndCollectMenu_subMenu(
   menu: menuType,
 ): Promise<menuType> {
   const store = useMenuStore.getState();
-  const structure = store.structureOneParameter;
-
   const updateMenu: menuType = {
     ...menu,
     parentId: store.parent,
+    description: store.description,
+    additional_description_for_ai_assistant: store.descriptionAi,
     data: {
       ...menu.data,
     },

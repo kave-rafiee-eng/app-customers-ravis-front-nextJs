@@ -49,7 +49,7 @@ export default function Menu() {
   };
 
   const loadData = async () => {
-    console.log("loadData");
+    console.log("loadData : " + useMenuStore.getState().endPointMenu);
     try {
       const response = await API_MENU.get(useMenuStore.getState().endPointMenu);
       setAllMenus(response.data);
@@ -83,7 +83,8 @@ export default function Menu() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "menu.json";
+
+    link.download = `menu_${Object.values(boardEnum).find((v) => v == board)}.json`;
     link.click();
     URL.revokeObjectURL(url);
     addMessage("JSON file downloaded", "succes");
@@ -94,7 +95,7 @@ export default function Menu() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        // height: "100vh",
         maxHeight: "100vh",
       }}
     >
@@ -115,14 +116,19 @@ export default function Menu() {
       <Box
         sx={{
           background: "#1B3C53",
-          height: "10%",
+          height: "10vh",
           justifyContent: "center",
           justifyItems: "center",
           alignItems: "center",
           alignContent: "center",
         }}
       >
-        <Stack direction={"row"} spacing={2}>
+        <Stack
+          direction={"row"}
+          spacing={2}
+          justifyContent={"space-evenly"}
+          width={"100%"}
+        >
           <Link color="red" href={"/"}>
             <Typography
               variant="h6"
@@ -134,6 +140,34 @@ export default function Menu() {
             </Typography>
           </Link>
 
+          <FormControl color="primary">
+            <InputLabel id="demo-simple-select-label">Borad</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Navgation"
+              value={board}
+              size="small"
+              color="primary"
+              sx={{ background: "white" }}
+              onChange={(event) => {
+                if (event.target.value == boardEnum.terse)
+                  setEndPointMenu(END_POINT_MENU_TERSE);
+                if (event.target.value == boardEnum.advance)
+                  setEndPointMenu(END_POINT_MENU_ADVANCE);
+                setBoard(event.target.value);
+                setEditId("");
+              }}
+            >
+              {Object.entries(boardEnum).map((v, index) => {
+                return (
+                  <MenuItem key={index} value={v[0]}>
+                    {v[1]}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
           <Button
             variant="contained"
             color="error"
@@ -148,35 +182,6 @@ export default function Menu() {
           <Button variant="contained" onClick={handleDownloadJson}>
             download
           </Button>
-
-          <FormControl color="primary">
-            <InputLabel id="demo-simple-select-label">Borad</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Navgation"
-              value={board}
-              size="small"
-              color="primary"
-              sx={{ background: "white" }}
-              onChange={(event) => {
-                setBoard(event.target.value);
-                if (event.target.value == boardEnum.terse)
-                  setEndPointMenu(END_POINT_MENU_TERSE);
-                if (event.target.value == boardEnum.advance)
-                  setEndPointMenu(END_POINT_MENU_ADVANCE);
-                setEditId("");
-              }}
-            >
-              {Object.entries(boardEnum).map((v, index) => {
-                return (
-                  <MenuItem key={index} value={v[0]}>
-                    {v[1]}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
         </Stack>
       </Box>
 
