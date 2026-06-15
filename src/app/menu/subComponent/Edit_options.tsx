@@ -11,7 +11,11 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { TableBasic, TableBasicProps } from "../../tree/component/TableBasic";
+import {
+  TableBasic,
+  TableBasicProps,
+} from "@/app/general-components/TableBasic";
+
 import { useMenuStore } from "../store/menu_store";
 
 type propsType = {

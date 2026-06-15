@@ -11,7 +11,11 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMenuStore } from "../store/menu_store";
 import { menuType, typeMenuEnum } from "../type/menu_type";
-import { TableBasic } from "../../tree/component/TableBasic";
+import {
+  TableBasic,
+  TableBasicProps,
+} from "@/app/general-components/TableBasic";
+
 import { useSnackBarError } from "../../stors/snakebar-store";
 
 type propsType = {

@@ -15,6 +15,11 @@ import {
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -40,6 +45,7 @@ import EditSubMenu from "./Edit_subMenu";
 type EditMenuPropsType = {
   idEdit: string;
   allMenus: menuType[];
+  onDelet: () => void;
 };
 
 function findMenuById(id: string, menus: menuType[]): menuType | undefined {
@@ -96,13 +102,18 @@ function createEmptyGroupItem(
   };
 }
 
-export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
+export default function EditMenu({
+  idEdit,
+  allMenus,
+  onDelet,
+}: EditMenuPropsType) {
   React.useEffect(() => {
     console.log("---- RENDER : EditMenu");
   });
 
   const [menuState, setMenuState] = React.useState<menuType>();
   const [saveing, setSaveing] = React.useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [activeIndexGroup, setActiveIndexGroup] = React.useState(0);
   const addMessage = useSnackBarError((state) => state.addMessage);
   const setCurrentMenuId = useMenuStore((state) => state.setCurrentMenuId);
@@ -169,6 +180,26 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     }
   }, [menuState, activeIndexGroup]);
 
+  const handleDelet = async () => {
+    if (menuState == undefined) return;
+    setSaveing(true);
+
+    try {
+      await API_MENU.delete(`${END_POINT_MENU_ADVANCE}/${menuState.id}`);
+      setMenuState(undefined);
+      setOpenDeleteDialog(false);
+      addMessage("deleted .", "succes");
+      setTimeout(() => {
+        refreshMenu();
+      }, 100);
+      onDelet();
+    } catch (err) {
+      console.log(err);
+      addMessage("error", "error");
+    }
+    setSaveing(false);
+  };
+
   let handleSava = async () => {
     if (menuState == undefined) return;
     setSaveing(true);
@@ -177,14 +208,15 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
     if (
       menuTypeChecked === typeMenuEnum.SETTING_ON_PARAMETER ||
       menuTypeChecked === typeMenuEnum.SETTING_ON_SELECT ||
-      menuTypeChecked === typeMenuEnum.SETTING_MULTY_SELECT
+      menuTypeChecked === typeMenuEnum.SETTING_MULTY_SELECT ||
+      menuTypeChecked == typeMenuEnum.SUBMENU
     ) {
       try {
         setMenuState(await saveAndCollectMenu(menuState));
         addMessage("saved .", "succes");
         setTimeout(() => {
           refreshMenu();
-        }, 1000);
+        }, 100);
         //
       } catch (err) {
         addMessage("error", "error");
@@ -365,7 +397,42 @@ export default function EditMenu({ idEdit, allMenus }: EditMenuPropsType) {
           {" "}
           save
         </Button>
+
+        <Button
+          variant="contained"
+          onClick={() => setOpenDeleteDialog(true)}
+          color="error"
+        >
+          delet
+        </Button>
       </Stack>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => !saveing && setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>delete menu</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            are you sure you want to delete menu{" "}
+            <strong>{menuState?.lable ?? menuState?.id ?? idEdit}</strong> (id:{" "}
+            {menuState?.id ?? idEdit})? this action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} disabled={saveing}>
+            cancel
+          </Button>
+          <Button
+            onClick={handleDelet}
+            color="error"
+            variant="contained"
+            disabled={saveing}
+          >
+            {saveing ? "deleting..." : "delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {checkTypeMenu(menuState) == typeMenuEnum.SETTING_ON_PARAMETER && (
         <EditSettingOneParameter />

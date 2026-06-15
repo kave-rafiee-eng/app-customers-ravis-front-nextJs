@@ -1,7 +1,7 @@
 import {
   DescriptionType,
   MiniDescriptionType,
-} from "../tree/type/menu-type";
+} from "@/app/menu/type/menu_type";
 
 export enum ErrorOriginEnum {
   ONLY_ADVANCE = "ONLY_ADVANCE",

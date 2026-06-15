@@ -15,9 +15,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DescriptionType, MiniDescriptionType } from "../tree/type/menu-type";
-import EditDescription from "../tree/component/EditDescription";
-import EditDescriptionAi from "../tree/component/EditDescriptionAi";
+import {
+  DescriptionType,
+  MiniDescriptionType,
+} from "@/app/menu/type/menu_type";
+
+import EditDescription from "../menu/subComponent/EditDescriptionLocal";
+import EditDescriptionAi from "../menu/subComponent/EditDescriptionAiLocal";
 import { useSnackBarError } from "../stors/snakebar-store";
 
 const api = axios.create({

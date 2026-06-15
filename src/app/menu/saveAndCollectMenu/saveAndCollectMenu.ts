@@ -13,6 +13,23 @@ async function postMenu(menu: menuType): Promise<menuType> {
   }
 }
 
+export async function saveAndCollectMenu_subMenu(
+  menu: menuType,
+): Promise<menuType> {
+  const store = useMenuStore.getState();
+  const structure = store.structureOneParameter;
+
+  const updateMenu: menuType = {
+    ...menu,
+    parentId: store.parent,
+    data: {
+      ...menu.data,
+    },
+  };
+
+  return postMenu(updateMenu);
+}
+
 export async function saveAndCollectMenu_settingOneParameter(
   menu: menuType,
 ): Promise<menuType> {
@@ -161,6 +178,9 @@ export default async function saveAndCollectMenu(
   const type = checkTypeMenu(menu);
 
   switch (type) {
+    case typeMenuEnum.SUBMENU:
+      return saveAndCollectMenu_subMenu(menu);
+
     case typeMenuEnum.SETTING_ON_PARAMETER:
       return saveAndCollectMenu_settingOneParameter(menu);
 

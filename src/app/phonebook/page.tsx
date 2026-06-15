@@ -20,8 +20,12 @@ import { CreatePhonebookType, PhonebookType } from "./phonebookType";
 import axios from "axios";
 import { backendUrl, translateUrl } from "../constant";
 import { useSnackBarError } from "../stors/snakebar-store";
-import { TableBasic, TableBasicProps } from "../tree/component/TableBasic";
-import { DescriptionType } from "../tree/type/menu-type";
+import {
+  TableBasic,
+  TableBasicProps,
+} from "@/app/general-components/TableBasic";
+
+import { DescriptionType } from "@/app/menu/type/menu_type";
 
 const api = axios.create({
   baseURL: backendUrl,

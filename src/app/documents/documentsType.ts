@@ -1,4 +1,4 @@
-import { DescriptionType } from "../tree/type/menu-type";
+import { DescriptionType } from "@/app/menu/type/menu_type";
 
 export type pdfFileType = {
   name: DescriptionType;

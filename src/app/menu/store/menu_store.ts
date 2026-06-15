@@ -6,6 +6,7 @@ import {
   optionType,
   ParanetIdLableType,
 } from "../type/menu_type";
+import { END_POINT_MENU_ADVANCE } from "../constant/apiUrl";
 
 type structureOneParameterType = {
   address: number;
@@ -34,7 +35,17 @@ type structurSubMenuType = {
   lable: string;
 };
 
+export enum boardEnum {
+  advance = "advance",
+  terse = "terse",
+}
 type menuStorType = {
+  board: boardEnum;
+  setBoard: (board: boardEnum) => void;
+
+  endPointMenu: string;
+  setEndPointMenu: (newEndPoint: string) => void;
+
   refreshTick: number;
   refreshMenu: () => void;
   currentMenuId: string;
@@ -113,6 +124,11 @@ const emptyStructureMultySelect: structureMultySelectType = {
 };
 
 export const useMenuStore = create<menuStorType>((set) => ({
+  board: boardEnum.advance,
+  setBoard: (board) => set((state) => ({ board: board })),
+  endPointMenu: END_POINT_MENU_ADVANCE,
+  setEndPointMenu: (newEndPoint) =>
+    set((state) => ({ endPointMenu: newEndPoint })),
   refreshTick: 0,
   refreshMenu: () => set((state) => ({ refreshTick: state.refreshTick + 1 })),
   currentMenuId: "0",

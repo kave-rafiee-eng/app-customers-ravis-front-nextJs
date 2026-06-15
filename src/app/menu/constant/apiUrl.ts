@@ -11,3 +11,4 @@ export const API_TRANSLATE = axios.create({
 });
 
 export const END_POINT_MENU_ADVANCE = "/menu-advance";
+export const END_POINT_MENU_TERSE = "/menu-terse";

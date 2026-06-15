@@ -13,7 +13,10 @@ import {
 import axios from "axios";
 import React from "react";
 import { useSnackBarError } from "../stors/snakebar-store";
-import { DescriptionType, MiniDescriptionType } from "../tree/type/menu-type";
+import {
+  DescriptionType,
+  MiniDescriptionType,
+} from "@/app/menu/type/menu_type";
 import { errorCodeType, ErrorOriginEnum } from "./errorType";
 
 const api = axios.create({

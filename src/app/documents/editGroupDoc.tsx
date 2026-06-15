@@ -1,7 +1,7 @@
 import React from "react";
 import { useSnackBarError } from "../stors/snakebar-store";
 import { GroupDocType, pdfFileType } from "./documentsType";
-import { DescriptionType } from "../tree/type/menu-type";
+import { DescriptionType } from "@/app/menu/type/menu_type";
 import { backendUrl, translateUrl } from "../constant";
 import axios from "axios";
 import {
@@ -17,7 +17,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { TableBasic, TableBasicProps } from "../tree/component/TableBasic";
+import {
+  TableBasic,
+  TableBasicProps,
+} from "@/app/general-components/TableBasic";
 
 type propsType = {
   onUpdate: () => void;
