@@ -194,7 +194,7 @@ export default function EditMenu({
       addMessage("deleted .", "succes");
       setTimeout(() => {
         refreshMenu();
-      }, 100);
+      }, 1000);
       onDelet();
     } catch (err) {
       console.log(err);
@@ -228,7 +228,9 @@ export default function EditMenu({
       try {
         setMenuState(await saveAndCollectMenu(menuState, activeIndexGroup));
         addMessage("saved .", "succes");
-        refreshMenu();
+        setTimeout(() => {
+          refreshMenu();
+        }, 1000);
       } catch (err) {
         addMessage("error", "error");
       }
