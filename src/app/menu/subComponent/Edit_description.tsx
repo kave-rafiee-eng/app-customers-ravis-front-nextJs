@@ -1,132 +1,135 @@
 import React from "react";
 import {
-  menuType,
-  DescriptionType,
-  MiniDescriptionType,
+    menuType,
+    DescriptionType,
+    MiniDescriptionType,
 } from "../type/menu_type";
 import {
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+    TextField,
+    Typography,
 } from "@mui/material";
 import axios from "axios";
 import { useSnackBarError } from "../../stors/snakebar-store";
 import { useMenuStore } from "../store/menu_store";
-import { API_TRANSLATE, TRANSLATE_API_BASE_URL } from "../constant/apiUrl";
+import { API_TRANSLATE } from "@/app/constant";
 
 type propsType = {};
 export default function EditDescription({}: propsType) {
-  const [languageSelect, setLanguageSelect] = React.useState("persian");
-  const [translating, setTranslating] = React.useState(false);
+    const [languageSelect, setLanguageSelect] = React.useState("persian");
+    const [translating, setTranslating] = React.useState(false);
 
-  const description = useMenuStore((state) => state.description);
-  const setDescription = useMenuStore((state) => state.setDescription);
+    const description = useMenuStore((state) => state.description);
+    const setDescription = useMenuStore((state) => state.setDescription);
 
-  const addMessage = useSnackBarError((state) => state.addMessage);
+    const addMessage = useSnackBarError((state) => state.addMessage);
 
-  let languages = Object.keys(description);
+    let languages = Object.keys(description);
 
-  const handleChangeSelectLanguage = (event: any) => {
-    setLanguageSelect(event.target.value);
-  };
+    const handleChangeSelectLanguage = (event: any) => {
+        setLanguageSelect(event.target.value);
+    };
 
-  const handleChageDescription = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    let newDescrip = { ...description };
-    newDescrip[languageSelect as keyof typeof description] = event.target.value;
-    setDescription(newDescrip);
-  };
+    const handleChageDescription = (
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+        let newDescrip = { ...description };
+        newDescrip[languageSelect as keyof typeof description] =
+            event.target.value;
+        setDescription(newDescrip);
+    };
 
-  const translate = async () => {
-    if (translating == false) {
-      setTranslating(true);
+    const translate = async () => {
+        if (translating == false) {
+            setTranslating(true);
 
-      try {
-        const resault = await API_TRANSLATE.post("/translate", {
-          text: description.persian,
-        });
-        console.log(resault.data);
-        const translate: DescriptionType = resault.data;
-        if (
-          translate.arabic &&
-          translate.english &&
-          translate.german &&
-          translate.german &&
-          translate.persian &&
-          translate.russian &&
-          translate.turkish
-        ) {
-          setDescription(translate);
-        } else addMessage("Error structure", "error");
-      } catch (err) {
-        console.log(err);
-        addMessage("connection Error", "error");
-      }
-      setTranslating(false);
-    }
-  };
+            try {
+                const resault = await API_TRANSLATE.post("/translate", {
+                    text: description.persian,
+                });
+                console.log(resault.data);
+                const translate: DescriptionType = resault.data;
+                if (
+                    translate.arabic &&
+                    translate.english &&
+                    translate.german &&
+                    translate.german &&
+                    translate.persian &&
+                    translate.russian &&
+                    translate.turkish
+                ) {
+                    setDescription(translate);
+                } else addMessage("Error structure", "error");
+            } catch (err) {
+                console.log(err);
+                addMessage("connection Error", "error");
+            }
+            setTranslating(false);
+        }
+    };
 
-  let rtl = false;
-  if (languageSelect == "persian" || languageSelect == "arabic") rtl = true;
+    let rtl = false;
+    if (languageSelect == "persian" || languageSelect == "arabic") rtl = true;
 
-  return (
-    <Stack direction={"column"} spacing={2} pt={2}>
-      <Stack direction={"row"} spacing={2}>
-        <Typography color="secondary" variant="h6">
-          For User
-        </Typography>
-        <FormControl
-          sx={{
-            width: "20%",
-          }}
-        >
-          <InputLabel id="demo-simple-select-label">language</InputLabel>
-          <Select
-            size="small"
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={languageSelect}
-            label="language"
-            onChange={handleChangeSelectLanguage}
-          >
-            {languages.map((lan, index) => {
-              return (
-                <MenuItem key={index} value={lan}>
-                  {lan}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
+    return (
+        <Stack direction={"column"} spacing={2} pt={2}>
+            <Stack direction={"row"} spacing={2}>
+                <Typography color="secondary" variant="h6">
+                    For User
+                </Typography>
+                <FormControl
+                    sx={{
+                        width: "20%",
+                    }}
+                >
+                    <InputLabel id="demo-simple-select-label">
+                        language
+                    </InputLabel>
+                    <Select
+                        size="small"
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={languageSelect}
+                        label="language"
+                        onChange={handleChangeSelectLanguage}
+                    >
+                        {languages.map((lan, index) => {
+                            return (
+                                <MenuItem key={index} value={lan}>
+                                    {lan}
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>
+                </FormControl>
 
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={translate}
-          disabled={translating ? true : false}
-        >
-          translate
-        </Button>
-      </Stack>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={translate}
+                    disabled={translating ? true : false}
+                >
+                    translate
+                </Button>
+            </Stack>
 
-      <TextField
-        multiline
-        minRows={3}
-        maxRows={10}
-        onChange={handleChageDescription}
-        value={description[languageSelect as keyof typeof description]}
-        variant="filled"
-        sx={{
-          direction: rtl ? "rtl" : "ltr",
-        }}
-        disabled={translating ? true : false}
-      ></TextField>
-    </Stack>
-  );
+            <TextField
+                multiline
+                minRows={3}
+                maxRows={10}
+                onChange={handleChageDescription}
+                value={description[languageSelect as keyof typeof description]}
+                variant="filled"
+                sx={{
+                    direction: rtl ? "rtl" : "ltr",
+                }}
+                disabled={translating ? true : false}
+            ></TextField>
+        </Stack>
+    );
 }

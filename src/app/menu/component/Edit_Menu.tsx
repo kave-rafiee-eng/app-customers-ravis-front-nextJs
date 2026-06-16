@@ -148,9 +148,9 @@ export default function EditMenu({
             setMenuState(undefined);
             setOpenDeleteDialog(false);
             addMessage("deleted .", "succes");
-            setTimeout(() => {
-                refreshMenu();
-            }, 1000);
+            refreshMenu();
+            // setTimeout(() => {
+            // }, 1000);
             onDelet();
         } catch (err) {
             console.log(err);
@@ -173,9 +173,10 @@ export default function EditMenu({
             try {
                 setMenuState(await saveAndCollectMenu(menuState));
                 addMessage("saved .", "succes");
-                setTimeout(() => {
-                    refreshMenu();
-                }, 1000);
+                refreshMenu();
+                // setTimeout(() => {
+
+                // }, 1000);
                 //
             } catch (err) {
                 addMessage("error", "error");
@@ -186,9 +187,9 @@ export default function EditMenu({
                     await saveAndCollectMenu(menuState, activeIndexGroup),
                 );
                 addMessage("saved .", "succes");
-                setTimeout(() => {
-                    refreshMenu();
-                }, 1000);
+                refreshMenu();
+                // setTimeout(() => {
+                // }, 1000);
             } catch (err) {
                 addMessage("error", "error");
             }
