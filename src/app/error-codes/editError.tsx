@@ -229,6 +229,7 @@ export default function EditErrorCode({ code, onUpdate }: propsType) {
                         overflowY: "auto",
                     }}
                 >
+                    Reason
                     {descrption != null && setDescription != null ? (
                         <EditDescription
                             description={descrption}
@@ -246,6 +247,7 @@ export default function EditErrorCode({ code, onUpdate }: propsType) {
                         maxHeight: "80%",
                     }}
                 >
+                    Solution
                     {solution != null && setSolution != null ? (
                         <EditDescription
                             description={solution}
