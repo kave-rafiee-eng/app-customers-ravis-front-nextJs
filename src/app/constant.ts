@@ -1,4 +1,11 @@
-export const backendUrl = "http://localhost:3000"; // "http://10.240.195.179:3000"
-export const translateUrl = "http://localhost:8000"; // "http://10.240.195.179:8000"
+import axios from "axios";
 
-//"http://10.240.195.179:3000",
+const MENU_API_BASE_URL = "http://localhost:3000";
+const TRANSLATE_API_BASE_URL = "http://localhost:8000";
+// baseURL: "http://10.240.195.179:3000",
+export const API_BACKEND = axios.create({
+    baseURL: MENU_API_BASE_URL,
+});
+export const API_TRANSLATE = axios.create({
+    baseURL: TRANSLATE_API_BASE_URL,
+});
