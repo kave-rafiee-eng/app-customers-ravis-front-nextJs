@@ -27,7 +27,11 @@ import {
   TableBasicProps,
 } from "@/app/general-components/TableBasic";
 
-import { useMenuStore } from "../store/menu_store";
+import {
+  emptyDescription,
+  emptyMiniDescription,
+  useMenuStore,
+} from "../store/menu_store";
 
 type propsType = {
   onSuccess: (id: string) => void;
@@ -47,20 +51,6 @@ const style = {
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
-};
-
-const emptyDescription: DescriptionType = {
-  english: "",
-  persian: "",
-  arabic: "",
-  turkish: "",
-  russian: "",
-  german: "",
-};
-
-const emptyMiniDescription: MiniDescriptionType = {
-  english: "",
-  persian: "",
 };
 
 const menuTypeOptions = [

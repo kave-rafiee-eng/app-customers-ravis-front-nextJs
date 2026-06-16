@@ -27,6 +27,8 @@ import {
   Stack,
   Typography,
   Divider,
+  Modal,
+  TextField,
 } from "@mui/material";
 
 import { useSnackBarError } from "../../stors/snakebar-store";
@@ -42,6 +44,7 @@ import { checkTypeMenu } from "../type/checkTypeMenu";
 import EditSettingOneSelect from "./Edit_oneSelect";
 import EditSettingMultySelect from "./Edit_multiSelect";
 import EditSubMenu from "./Edit_subMenu";
+import AddItemToMultyGroup from "../subComponent/addItemToMultiGroup";
 
 type EditMenuPropsType = {
   idEdit: string;
@@ -51,56 +54,6 @@ type EditMenuPropsType = {
 
 function findMenuById(id: string, menus: menuType[]): menuType | undefined {
   return menus.find((menu) => menu.id === id);
-}
-
-const emptyDescription: DescriptionType = {
-  english: "",
-  persian: "",
-  arabic: "",
-  turkish: "",
-  russian: "",
-  german: "",
-};
-
-const emptyMiniDescription: MiniDescriptionType = {
-  english: "",
-  persian: "",
-};
-
-function createEmptyGroupItem(
-  existingGroup: settingMultyGroupType[],
-  activeIndex: number,
-): settingMultyGroupType {
-  const activeItem = existingGroup[activeIndex];
-
-  if (activeItem?.settingOneSelect) {
-    return {
-      settingOneSelect: {
-        default: 0,
-        address: 0,
-        label: "new item",
-        options: [],
-        description: { ...emptyDescription },
-        additional_description_for_ai_assistant: { ...emptyMiniDescription },
-      },
-    };
-  }
-
-  return {
-    settingOneParameter: {
-      address: 0,
-      default: 0,
-      offset: 0,
-      addition: 0,
-      unit: "",
-      factor: 0,
-      minValue: 0,
-      maxValue: 0,
-      label: "new item",
-      description: { ...emptyDescription },
-      additional_description_for_ai_assistant: { ...emptyMiniDescription },
-    },
-  };
 }
 
 export default function EditMenu({
@@ -116,6 +69,8 @@ export default function EditMenu({
   const [saveing, setSaveing] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [activeIndexGroup, setActiveIndexGroup] = React.useState(0);
+  const [openModalAddItemToMultiGroup, setOpenModalAddItemToMultiGroup] =
+    React.useState(false);
   const addMessage = useSnackBarError((state) => state.addMessage);
   const setCurrentMenuId = useMenuStore((state) => state.setCurrentMenuId);
   const refreshMenu = useMenuStore((state) => state.refreshMenu);
@@ -241,25 +196,6 @@ export default function EditMenu({
     setSaveing(false);
   };
 
-  const handleAddGroupItem = () => {
-    if (!menuState?.data.settingMultyGroup) return;
-
-    const nextGroup = [
-      ...menuState.data.settingMultyGroup,
-      createEmptyGroupItem(menuState.data.settingMultyGroup, activeIndexGroup),
-    ];
-    const nextIndex = nextGroup.length - 1;
-
-    setMenuState({
-      ...menuState,
-      data: {
-        ...menuState.data,
-        settingMultyGroup: nextGroup,
-      },
-    });
-    setActiveIndexGroup(nextIndex);
-  };
-
   const handleDeleteGroupItem = () => {
     if (!menuState?.data.settingMultyGroup) return;
 
@@ -301,6 +237,26 @@ export default function EditMenu({
       spacing={1}
       // sx={{ height: "100%" }}
     >
+      {checkTypeMenu(menuState) == typeMenuEnum.SETTING_MULTY_GROUP && (
+        <Modal
+          open={openModalAddItemToMultiGroup}
+          onClose={() => {
+            setOpenModalAddItemToMultiGroup(false);
+          }}
+        >
+          <AddItemToMultyGroup
+            onCancel={() => {
+              setOpenModalAddItemToMultiGroup(false);
+            }}
+            onSuccess={() => {
+              addMessage("add item .", "succes");
+            }}
+            menu={menuState!}
+            setMenuState={setMenuState}
+          />
+        </Modal>
+      )}
+
       <Stack
         direction={{ xs: "column", lg: "row" }}
         spacing={1.5}
@@ -333,9 +289,23 @@ export default function EditMenu({
             flexItem
             sx={{ borderColor: "rgba(255,255,255,0.35)" }}
           />
-          <Typography variant="subtitle1" fontWeight={600} noWrap>
+          {/* <Typography variant="subtitle1" fontWeight={600} noWrap>
             {menuState?.lable}
-          </Typography>
+          </Typography> */}
+          <TextField
+            size="small"
+            value={menuState?.lable}
+            onChange={(event) => {
+              setMenuState((prev) => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  lable: event.target.value,
+                };
+              });
+            }}
+            variant="standard"
+          />
           <Divider
             orientation="vertical"
             flexItem
@@ -456,7 +426,9 @@ export default function EditMenu({
               <Button
                 variant="contained"
                 size="small"
-                onClick={handleAddGroupItem}
+                onClick={() => {
+                  setOpenModalAddItemToMultiGroup(true);
+                }}
                 sx={{ background: "white", color: "#456882" }}
               >
                 addItem

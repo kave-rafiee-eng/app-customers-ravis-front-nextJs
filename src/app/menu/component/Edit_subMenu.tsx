@@ -72,9 +72,9 @@ export default function EditSubMenu({}: propsType) {
           indicatorColor="secondary"
           aria-label="secondary tabs example"
         >
-          <Tab value={SettingTab.Description} label="Description" />
-          <Tab value={SettingTab.SubMenus} label="SubMenus" />
-          <Tab value={SettingTab.Parent} label="Parent" />
+          {Object.entries(SettingTab).map((v, index) => (
+            <Tab key={index} value={v[0]} label={v[1]} />
+          ))}
         </Tabs>
 
         <div
@@ -114,6 +114,7 @@ export default function EditSubMenu({}: propsType) {
             ))}
           </Stack>
         </div>
+
         <div
           hidden={tab !== SettingTab.Parent}
           style={{

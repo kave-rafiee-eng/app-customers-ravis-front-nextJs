@@ -3,7 +3,7 @@ import { checkTypeMenu } from "../type/checkTypeMenu";
 import { menuType, typeMenuEnum } from "../type/menu_type";
 import { API_MENU, END_POINT_MENU_ADVANCE } from "../constant/apiUrl";
 
-async function postMenu(menu: menuType): Promise<menuType> {
+export async function postMenu(menu: menuType): Promise<menuType> {
   try {
     const res = await API_MENU.post(useMenuStore.getState().endPointMenu, menu);
     return res.data as menuType;

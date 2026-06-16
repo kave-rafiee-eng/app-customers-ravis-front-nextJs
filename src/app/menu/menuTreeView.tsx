@@ -52,6 +52,7 @@ function convert(menuData: menuType[]): nodesType[] {
     } else {
       const founded = map.find((m) => m.idMenu == menu.idParent);
       if (founded) founded.children.push(menu);
+      else root.push(menu);
       // map[menu.idParent].children.push(menu);
     }
   });
@@ -141,7 +142,7 @@ function TreeNodeLabel({
             {node.name}
           </Typography>
           <Chip
-            label="submenu"
+            label={`submenu(${node.idMenu})`}
             size="small"
             sx={{
               height: 20,

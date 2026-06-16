@@ -31,10 +31,6 @@ type structureMultySelectType = {
   addresses: number[];
 };
 
-type structurSubMenuType = {
-  lable: string;
-};
-
 export enum boardEnum {
   advance = "advance",
   terse = "terse",
@@ -50,9 +46,6 @@ type menuStorType = {
   refreshMenu: () => void;
   currentMenuId: string;
   setCurrentMenuId: (currentMenuId: string) => void;
-
-  structurSubMebu: structurSubMenuType;
-  setStructurSubMebu: (structurSubMebu: structurSubMenuType) => void;
 
   description: DescriptionType;
   setDescription: (description: DescriptionType) => void;
@@ -86,7 +79,7 @@ type menuStorType = {
   setAllMenus: (allMenus: menuType[]) => void;
 };
 
-const emptyDescription: DescriptionType = {
+export const emptyDescription: DescriptionType = {
   english: "",
   persian: "",
   arabic: "",
@@ -95,12 +88,12 @@ const emptyDescription: DescriptionType = {
   german: "",
 };
 
-const emptyMiniDescription: MiniDescriptionType = {
+export const emptyMiniDescription: MiniDescriptionType = {
   english: "",
   persian: "",
 };
 
-const emptyStructureOneParameter: structureOneParameterType = {
+export const emptyStructureOneParameter: structureOneParameterType = {
   address: 0,
   default: 0,
   offset: 0,
@@ -112,13 +105,13 @@ const emptyStructureOneParameter: structureOneParameterType = {
   label: "",
 };
 
-const emptyStructureOneSelect: structureOneSelectType = {
+export const emptyStructureOneSelect: structureOneSelectType = {
   default: 0,
   address: 0,
   label: "",
 };
 
-const emptyStructureMultySelect: structureMultySelectType = {
+export const emptyStructureMultySelect: structureMultySelectType = {
   defaults: [],
   addresses: [],
 };
@@ -133,10 +126,7 @@ export const useMenuStore = create<menuStorType>((set) => ({
   refreshMenu: () => set((state) => ({ refreshTick: state.refreshTick + 1 })),
   currentMenuId: "0",
   setCurrentMenuId: (currentMenuId) => set({ currentMenuId }),
-  structurSubMebu: {
-    lable: "",
-  },
-  setStructurSubMebu: (structurSubMebu) => set({ structurSubMebu }),
+
   allMenus: [],
   setAllMenus: (allMenus) => set({ allMenus }),
   description: { ...emptyDescription },

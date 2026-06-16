@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 // import EditMenu from "./component/EditMenu";
 import SimpleSnackbar from "../general-components/SnackbarError";
-import { menuType } from "./type/menu_type";
+import { menuType, typeMenuEnum } from "./type/menu_type";
 import {
   API_MENU,
   END_POINT_MENU_ADVANCE,
@@ -27,10 +27,17 @@ import {
 import { useSnackBarError } from "../stors/snakebar-store";
 import MenuTreeView from "./menuTreeView";
 import EditDescription from "./subComponent/Edit_description";
-import { boardEnum, useMenuStore } from "./store/menu_store";
+import {
+  boardEnum,
+  emptyDescription,
+  emptyMiniDescription,
+  useMenuStore,
+} from "./store/menu_store";
 import EditMenu from "./component/Edit_Menu";
 import Link from "next/link";
 import AddMenu from "./subComponent/addMenu";
+import { checkTypeMenu } from "./type/checkTypeMenu";
+import { postMenu } from "./saveAndCollectMenu/saveAndCollectMenu";
 
 export default function Menu() {
   const refreshTick = useMenuStore((state) => state.refreshTick);
