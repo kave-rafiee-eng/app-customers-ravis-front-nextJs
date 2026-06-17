@@ -1,7 +1,9 @@
 import axios from "axios";
 
-const MENU_API_BASE_URL = "http://localhost:3000";
-const TRANSLATE_API_BASE_URL = "http://localhost:8000";
+const MENU_API_BASE_URL =
+    process.env.NEXT_PUBLIC_MENU_API_BASE_URL ?? "http://localhost:3000";
+const TRANSLATE_API_BASE_URL =
+    process.env.NEXT_PUBLIC_TRANSLATE_API_BASE_URL ?? "http://localhost:8000";
 // baseURL: "http://10.240.195.179:3000",
 export const API_BACKEND = axios.create({
     baseURL: MENU_API_BASE_URL,
