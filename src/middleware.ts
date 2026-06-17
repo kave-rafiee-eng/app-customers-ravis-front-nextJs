@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
 
   if (isPublicPath(pathname)) {
     if (authenticated && pathname.startsWith("/login")) {
-      return NextResponse.redirect(new URL("/home", request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
     return NextResponse.next();
   }

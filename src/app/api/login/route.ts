@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { AUTH_COOKIE, getAuthCookieOptions } from "@/lib/auth-cookie";
 
 export async function POST(request: Request) {
     const { password } = await request.json();
@@ -12,13 +13,7 @@ export async function POST(request: Request) {
     }
 
     const response = NextResponse.json({ success: true });
-    response.cookies.set("auth", "true", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24,
-    });
+    response.cookies.set(AUTH_COOKIE, "true", getAuthCookieOptions(request));
 
     return response;
 }
