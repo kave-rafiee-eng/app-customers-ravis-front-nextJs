@@ -128,7 +128,8 @@ export async function saveAndCollectMenu_settingMultyGroup(
   }
 
   if (activeItemIndex > 0) {
-    const activeItem = { ...group[activeItemIndex - 1] };
+    const indexGroup = activeItemIndex - 1;
+    const activeItem = { ...group[indexGroup] };
 
     if (activeItem.settingOneParameter) {
       const structure = store.structureOneParameter;
@@ -161,12 +162,17 @@ export async function saveAndCollectMenu_settingMultyGroup(
       };
     }
 
-    group[activeItemIndex] = activeItem;
+    group[indexGroup] = activeItem;
   }
 
   const updateMenu: menuType = {
     ...menu,
-    parentId: store.parent,
+    description: activeItemIndex == 0 ? store.description : menu.description,
+    additional_description_for_ai_assistant:
+      activeItemIndex == 0
+        ? store.descriptionAi
+        : menu.additional_description_for_ai_assistant,
+    parentId: activeItemIndex == 0 ? store.parent : menu.parentId,
     data: {
       ...menu.data,
       settingMultyGroup: group,

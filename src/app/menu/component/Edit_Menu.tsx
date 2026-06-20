@@ -95,8 +95,6 @@ export default function EditMenu({
   }, [idEdit]);
 
   const navigations = React.useMemo(() => {
-    const setAllMenus = useMenuStore((state) => state.setAllMenus);
-    setAllMenus(allMenus);
     const result: string[][] = [];
     function findPaths(menuId: string, path: string[] = []) {
       const menu = findMenuById(menuId, allMenus);
@@ -182,7 +180,9 @@ export default function EditMenu({
       try {
         setMenuState(await saveAndCollectMenu(menuState, activeIndexGroup));
         addMessage("saved .", "succes");
-        refreshMenu();
+        setTimeout(() => {
+          refreshMenu();
+        }, 1000);
       } catch (err) {
         addMessage("error", "error");
       }
@@ -202,8 +202,10 @@ export default function EditMenu({
       return;
     }
 
-    const nextGroup = group.filter((_, index) => index !== activeIndexGroup);
-    const nextIndex = Math.min(activeIndexGroup, nextGroup.length - 1);
+    const nextGroup = group.filter(
+      (_, index) => index !== activeIndexGroup - 1,
+    );
+    const nextIndex = Math.min(activeIndexGroup, nextGroup.length);
 
     setMenuState({
       ...menuState,
@@ -223,13 +225,13 @@ export default function EditMenu({
     activeIndexGroup > 0
   ) {
     if (
-      menuState?.data.settingMultyGroup![activeIndexGroup + 1]
+      menuState?.data.settingMultyGroup![activeIndexGroup - 1]
         .settingOneParameter
     )
       activeEdit_oneParameter = true;
 
     if (
-      menuState?.data.settingMultyGroup![activeIndexGroup + 1].settingOneSelect
+      menuState?.data.settingMultyGroup![activeIndexGroup - 1].settingOneSelect
     )
       activeEdit_oneSelect = true;
   }
