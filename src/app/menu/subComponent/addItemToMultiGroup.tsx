@@ -28,7 +28,7 @@ type propsType = {
   onSuccess: () => void;
   onCancel: () => void;
   menu: menuType;
-  setMenuState: React.Dispatch<React.SetStateAction<menuType | undefined>>;
+  setMenuState: React.Dispatch<React.SetStateAction<menuType | null>>;
 };
 export default function AddItemToMultyGroup({
   onCancel,

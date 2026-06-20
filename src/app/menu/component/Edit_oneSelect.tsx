@@ -41,9 +41,11 @@ enum SettingTab {
   Parent = "Parent",
 }
 
-type propsType = {};
+type propsType = {
+  parentEnable: boolean;
+};
 
-export default function EditSettingOneSelect({}: propsType) {
+export default function EditSettingOneSelect({ parentEnable }: propsType) {
   const [tab, setTab] = React.useState<SettingTab>(SettingTab.Description);
 
   const handleChange = (event: React.SyntheticEvent, newValue: SettingTab) => {
@@ -63,7 +65,7 @@ export default function EditSettingOneSelect({}: propsType) {
           <Tab value={SettingTab.Description} label="Description" />
           <Tab value={SettingTab.Structure} label="Structure" />
           <Tab value={SettingTab.Options} label="Options" />
-          <Tab value={SettingTab.Parent} label="Parent" />
+          {parentEnable && <Tab value={SettingTab.Parent} label="Parent" />}
         </Tabs>
 
         <div

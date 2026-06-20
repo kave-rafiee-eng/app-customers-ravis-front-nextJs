@@ -1,6 +1,6 @@
 import { menuType, typeMenuEnum } from "./menu_type";
 
-export function checkTypeMenu(menu: menuType | undefined): typeMenuEnum {
+export function checkTypeMenu(menu: menuType | null): typeMenuEnum {
   if (!menu) return typeMenuEnum.UNDEFINDED;
 
   const { type, data } = menu;

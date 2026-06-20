@@ -143,19 +143,24 @@ export function initStoreMenu(menu: menuType) {
 }
 
 export function initStoreMenuGroup(menu: menuType, activeItemIndex: number) {
-  const settingMultySelect = menu.data.settingMultyGroup!;
+  if (activeItemIndex == 0) {
+    resetMenuStore();
+    useMenuStore.setState({
+      description: menu.description,
+      descriptionAi: menu.additional_description_for_ai_assistant,
+      parent: menu.parentId,
+    });
+  } else {
+    const settingMultySelect = menu.data.settingMultyGroup!;
+    const activeItem = settingMultySelect[activeItemIndex - 1];
+    if (activeItem.settingOneParameter) {
+      initStoreMenu_settingOneParameter(activeItem.settingOneParameter);
+    }
 
-  const activeItem = settingMultySelect[activeItemIndex];
-
-  if (activeItem.settingOneParameter) {
-    initStoreMenu_settingOneParameter(activeItem.settingOneParameter);
+    if (activeItem.settingOneSelect) {
+      initStoreMenu_settingOneSelect(activeItem.settingOneSelect);
+    }
   }
-
-  if (activeItem.settingOneSelect) {
-    initStoreMenu_settingOneSelect(activeItem.settingOneSelect);
-  }
-
-  useMenuStore.setState({ parent: menu.parentId });
 }
 
 /** @deprecated use initStoreMenu_settingOneParameter */
