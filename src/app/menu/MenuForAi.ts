@@ -32,11 +32,8 @@ interface MenuAiBaseModel {
   description_for_ai: string;
 }
 
-interface MenuSettingOneParameterAi extends MenuAiBaseModel {
-  unit: string;
-  minValue: number;
-  maxValue: number;
-}
+interface MenuSettingOneParameterAi
+  extends MenuAiBaseModel, oneParameterParams {}
 
 interface MenuSettingOneSelectAi extends MenuAiBaseModel {
   options: OptionAi[];
@@ -47,14 +44,18 @@ interface MenuSettingMultySelectAi extends MenuAiBaseModel {
   itemLabels: OptionAi[];
 }
 
-interface itemOneParameterAi {
+interface oneParameterParams {
+  unit: string;
+  minValue: number;
+  maxValue: number;
+  step: number;
+}
+
+interface itemOneParameterAi extends oneParameterParams {
   type: MenuTypeAi;
   label: string;
   description: string;
   description_for_ai: string;
-  unit: string;
-  minValue: number;
-  maxValue: number;
 }
 
 interface itemOneSelectAi {
@@ -74,6 +75,25 @@ type MenuAi =
   | MenuSettingOneSelectAi
   | MenuSettingMultySelectAi
   | MenuSettingMultyGroupAi;
+
+function calculadeFactor(factor: number): number {
+  return factor == 0 ? 1.0 : factor > 0 ? factor : 1.0 / Math.abs(factor);
+}
+
+interface CalculateShowValueParams {
+  value: number;
+  factor: number;
+  addition: number;
+  offset: number;
+}
+function calculaedhowValue({
+  value,
+  factor,
+  addition,
+  offset,
+}: CalculateShowValueParams): number {
+  return (value - offset) * calculadeFactor(factor) - addition;
+}
 
 function optionForAi(option: optionType): OptionAi {
   return {
@@ -104,8 +124,19 @@ function itemOneParameterForAi(
     type: MenuTypeAi.SETTING_ON_PARAMETER,
     label: setting.label,
     unit: setting.unit,
-    minValue: setting.minValue,
-    maxValue: setting.maxValue,
+    minValue: calculaedhowValue({
+      value: setting.minValue,
+      offset: setting.offset,
+      addition: setting.addition,
+      factor: setting.factor,
+    }),
+    maxValue: calculaedhowValue({
+      value: setting.maxValue,
+      offset: setting.offset,
+      addition: setting.addition,
+      factor: setting.factor,
+    }),
+    step: calculadeFactor(setting.factor),
     description: setting.description.english,
     description_for_ai: setting.additional_description_for_ai_assistant.english,
   };
@@ -170,8 +201,19 @@ function mapMenuToAi(allmenus: menuType[], menu: menuType): MenuAi | null {
         description_for_ai:
           setting.additional_description_for_ai_assistant.english,
         unit: setting.unit,
-        minValue: setting.minValue,
-        maxValue: setting.maxValue,
+        minValue: calculaedhowValue({
+          value: setting.minValue,
+          offset: setting.offset,
+          addition: setting.addition,
+          factor: setting.factor,
+        }),
+        maxValue: calculaedhowValue({
+          value: setting.maxValue,
+          offset: setting.offset,
+          addition: setting.addition,
+          factor: setting.factor,
+        }),
+        step: calculadeFactor(setting.factor),
       };
       return result;
     }
