@@ -1,13 +1,14 @@
 import axios from "axios";
 
 const MENU_API_BASE_URL =
-    process.env.NEXT_PUBLIC_MENU_API_BASE_URL ?? "http://localhost:3000";
+  process.env.NEXT_PUBLIC_MENU_API_BASE_URL ?? "http://localhost:3000";
 const TRANSLATE_API_BASE_URL =
-    process.env.NEXT_PUBLIC_TRANSLATE_API_BASE_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_TRANSLATE_API_BASE_URL ?? "http://localhost:8000";
 
 export const API_BACKEND = axios.create({
-    baseURL: MENU_API_BASE_URL,
+  baseURL: MENU_API_BASE_URL,
 });
+
 export const API_TRANSLATE = axios.create({
-    baseURL: TRANSLATE_API_BASE_URL,
+  baseURL: TRANSLATE_API_BASE_URL,
 });

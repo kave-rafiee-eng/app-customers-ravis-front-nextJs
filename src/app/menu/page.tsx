@@ -37,6 +37,7 @@ import {
   END_POINT_MENU_ADVANCE,
   END_POINT_MENU_TERSE,
 } from "./constant/apiUrl";
+import { menusForAi } from "./MenuForAi";
 
 export default function Menu() {
   const refreshTick = useMenuStore((state) => state.refreshTick);
@@ -96,6 +97,23 @@ export default function Menu() {
     link.href = url;
 
     link.download = `menu_${Object.values(boardEnum).find((v) => v == board)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    addMessage("JSON file downloaded", "succes");
+  };
+
+  const handleDownloadJsonForAi = () => {
+    if (allMenus.length === 0) {
+      addMessage("No contacts to download", "error");
+      return;
+    }
+
+    const json = JSON.stringify(menusForAi(allMenus), null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `menu_${Object.values(boardEnum).find((v) => v == board)}Ai.json`;
     link.click();
     URL.revokeObjectURL(url);
     addMessage("JSON file downloaded", "succes");
@@ -192,6 +210,10 @@ export default function Menu() {
 
           <Button variant="contained" onClick={handleDownloadJson}>
             download
+          </Button>
+
+          <Button variant="contained" onClick={handleDownloadJsonForAi}>
+            download For Ai
           </Button>
         </Stack>
       </Box>
