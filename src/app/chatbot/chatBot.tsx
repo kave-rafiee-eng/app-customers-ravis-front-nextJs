@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Modal, rgbToHex, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Modal,
+  rgbToHex,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { json } from "stream/consumers";
 import { API_CHATBOT } from "../constant";
 import { useSnackBarError } from "../stors/snakebar-store";
@@ -31,8 +41,17 @@ export default function ChatMain() {
     excution: "",
   });
 
+  const [executionReport, setExecutionReport] = useState<boolean>(true);
+
   const [temp, setTemp] = useState("hello");
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   const sendQuery = async (query: string) => {
     const newMsg: MessageType = {
       type: "human",
@@ -42,14 +61,23 @@ export default function ChatMain() {
     setSending(true);
 
     try {
+      const startTime = Date.now();
       const res = await API_CHATBOT.post("/agent", {
         query: createHistory([...messages.msg, newMsg]),
+        executionReport,
       });
+
+      const endTime = Date.now();
+      const durationInSeconds = (endTime - startTime) / 1000;
 
       setMessages((prev) => {
         return {
           ...prev,
-          msg: [...prev.msg, newMsg, { type: "ai", data: res.data.answer }],
+          msg: [
+            ...prev.msg,
+            newMsg,
+            { type: "ai", data: res.data.answer, time: durationInSeconds },
+          ],
           excution: res.data.Execution,
         };
       });
@@ -145,7 +173,12 @@ export default function ChatMain() {
                 }}
                 key={index}
               >
-                <ReactMarkdown>{value.data}</ReactMarkdown>
+                <Stack>
+                  {value.time && (
+                    <Typography color="error">{value.time} sec</Typography>
+                  )}
+                  <ReactMarkdown>{value.data}</ReactMarkdown>
+                </Stack>
               </Box>
             );
           })}
@@ -199,6 +232,20 @@ export default function ChatMain() {
             background: "#cccccc",
           }}
         >
+          <FormControlLabel
+            control={
+              <Checkbox
+                defaultChecked
+                checked={executionReport}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setExecutionReport(event.target.checked);
+                }}
+              />
+            }
+            label={"report"}
+          />
+          {executionReport && <Typography>Agent Execution Report :</Typography>}
+
           <ReactMarkdown>{messages.excution}</ReactMarkdown>
         </Box>
       </Box>

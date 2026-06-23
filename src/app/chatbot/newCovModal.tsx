@@ -27,7 +27,7 @@ type NewCovProps = {
   onSuccess: (msg: string) => void;
 };
 
-const categories: string[] = ["کدهای خطا", "yaskawa l1000a"];
+const categories: string[] = ["کدهای خطا برد راویس", "yaskawa l1000a"];
 
 export default function NewConv({ onClose, onSuccess }: NewCovProps) {
   const [checked, setChecked] = useState<boolean[]>(
