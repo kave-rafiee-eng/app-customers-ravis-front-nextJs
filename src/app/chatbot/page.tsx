@@ -182,6 +182,7 @@ export default function ChatMain() {
     try {
       const startTime = Date.now();
       const res = await API_CHATBOT.post("/agent", {
+        userid: "kave",
         query: query,
         history: createHistory([...messages.msg]),
         executionReport,
