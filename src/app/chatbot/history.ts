@@ -1,5 +1,13 @@
 import { MessageType } from "./message-type";
 
-export function createHistory(msgs: MessageType[]): string {
-  return msgs.map((msg) => `( ${msg.type} : ${msg.data} )`).join(",");
+export type LangChainHistoryMessage = {
+  type: "human" | "ai";
+  content: string;
+};
+
+export function createHistory(msgs: MessageType[]): LangChainHistoryMessage[] {
+  return msgs.map((msg) => ({
+    type: msg.type,
+    content: msg.data,
+  }));
 }
