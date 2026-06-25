@@ -2,8 +2,9 @@ import axios from "axios";
 
 const MENU_API_BASE_URL =
   process.env.NEXT_PUBLIC_MENU_API_BASE_URL ?? "http://localhost:3000";
+
 const TRANSLATE_API_BASE_URL =
-  process.env.NEXT_PUBLIC_TRANSLATE_API_BASE_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_TRANSLATE_API_BASE_URL ?? "http://localhost:8001";
 
 const CHATBOT_API_BASE_URL =
   process.env.NEXT_PUBLIC_MENU_API_BASE_URL ?? "http://localhost:8000";
@@ -19,3 +20,6 @@ export const API_TRANSLATE = axios.create({
 export const API_CHATBOT = axios.create({
   baseURL: CHATBOT_API_BASE_URL,
 });
+
+export const END_POINT_TRANSLATER_ENGLISH = "/translateToEnglish";
+export const END_POINT_TRANSLATER_FULL = "/translate";
