@@ -25,10 +25,7 @@ import {
   TableBasicProps,
 } from "@/app/general-components/TableBasic";
 import { API_BACKEND } from "../constant";
-import {
-  translateEnglish,
-  translateFull,
-} from "../general-components/translate";
+import { translateFull } from "../general-components/translate";
 
 type propsType = {
   onUpdate: () => void;
