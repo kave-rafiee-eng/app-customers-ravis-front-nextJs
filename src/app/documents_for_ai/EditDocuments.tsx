@@ -21,7 +21,7 @@ import { translateEnglish } from "../general-components/translate";
 
 type LanguageType = keyof MiniDescriptionType;
 
-type DocumentType = {
+export type DocumentAiType = {
   id: string;
   category: string;
   title: MiniDescriptionType;
@@ -36,7 +36,7 @@ type propsType = {
 export default function EditDocument({ idEdit, onUpdate }: propsType) {
   const addMessage = useSnackBarError((state) => state.addMessage);
 
-  const [document, setDocument] = useState<DocumentType>();
+  const [document, setDocument] = useState<DocumentAiType>();
   const [language, setLanguage] = useState<LanguageType>("persian");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -48,7 +48,7 @@ export default function EditDocument({ idEdit, onUpdate }: propsType) {
   const loadDocument = async () => {
     setLoading(true);
     try {
-      const res = await API_BACKEND.get<DocumentType>(
+      const res = await API_BACKEND.get<DocumentAiType>(
         END_POINT_AI_DOCUMENTS + "/" + idEdit,
       );
 
@@ -106,7 +106,7 @@ export default function EditDocument({ idEdit, onUpdate }: propsType) {
     SetTranslate(true);
 
     try {
-      const updatedDocument: DocumentType = { ...document };
+      const updatedDocument: DocumentAiType = { ...document };
 
       for (const field of fieldsToTranslate) {
         const persian = document[field].persian.trim();
