@@ -3,13 +3,16 @@
 import React from "react";
 import { MiniDescriptionType, optionType } from "../type/menu_type";
 import {
+  Box,
   Button,
   FormControl,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import {
   TableBasic,
@@ -17,6 +20,8 @@ import {
 } from "@/app/general-components/TableBasic";
 
 import { useMenuStore } from "../store/menu_store";
+import { translateEnglish } from "@/app/general-components/translate";
+import { useSnackBarError } from "@/app/stors/snakebar-store";
 
 type propsType = {
   editItem: boolean;
@@ -37,6 +42,8 @@ const emptyOption: optionType = {
 };
 
 export default function EditOptions({ editItem }: propsType) {
+  const addMessage = useSnackBarError((state) => state.addMessage);
+
   const [optionLanguage, setOptionLanguage] = React.useState<
     "english" | "persian"
   >("english");
@@ -47,6 +54,34 @@ export default function EditOptions({ editItem }: propsType) {
   const setOptionsList = useMenuStore((state) =>
     editItem ? state.setItems : state.setOptions,
   );
+
+  const [translate, setTranslate] = React.useState(false);
+  const [translateProgress, setTranslateProgress] = React.useState(0);
+  const translateTotalStep = React.useRef(0);
+
+  const handleTranslte = async () => {
+    setTranslate(true);
+
+    let newOptions = [...options];
+
+    try {
+      translateTotalStep.current = newOptions.length;
+      setTranslateProgress(0);
+
+      for (let i = 0; i < newOptions.length; i++) {
+        const description = await translateEnglish(
+          newOptions[i].description.persian,
+        );
+        newOptions[i].description.english = description.english;
+        setTranslateProgress((prev) => prev + 1);
+      }
+      setOptionsList(newOptions);
+    } catch (err) {
+      addMessage("translating Error", "error");
+    }
+
+    setTranslate(false);
+  };
 
   const updateOption = (
     index: number,
@@ -139,6 +174,10 @@ export default function EditOptions({ editItem }: propsType) {
               >
                 add option
               </Button>
+
+              <Button variant="contained" size="small" onClick={handleTranslte}>
+                translate
+              </Button>
             </Stack>
           );
         },
@@ -169,11 +208,29 @@ export default function EditOptions({ editItem }: propsType) {
 
   return (
     <Stack spacing={1} sx={{ height: "100%" }}>
-      <TableBasic
-        height="100%"
-        columns={propsTable.columns}
-        tableData={propsTable.tableData}
-      />
+      {!translate && (
+        <TableBasic
+          height="100%"
+          columns={propsTable.columns}
+          tableData={propsTable.tableData}
+        />
+      )}
+      {translate && (
+        <Box sx={{ width: "100%" }}>
+          <Typography variant="body2" textAlign="center" gutterBottom>
+            Translating... {translateProgress} / {translateTotalStep.current}
+          </Typography>
+          <LinearProgress
+            variant="determinate"
+            value={
+              translateTotalStep.current > 0
+                ? (translateProgress / translateTotalStep.current) * 100
+                : 0
+            }
+            sx={{ height: 8, borderRadius: 1 }}
+          />
+        </Box>
+      )}
     </Stack>
   );
 }

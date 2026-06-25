@@ -23,7 +23,9 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import StorageIcon from "@mui/icons-material/Storage";
 import type { SvgIconComponent } from "@mui/icons-material";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -77,9 +79,16 @@ const appSections: Section[] = [
   },
   {
     title: "tickets",
-    description: "answer to tickets",
+    description: "tickets and supports",
     href: "ticket",
-    icon: ContactPhoneIcon,
+    icon: SupportAgentIcon,
+    accent: "#0F766E",
+  },
+  {
+    title: "document for ai",
+    description: "dpcument for rag system",
+    href: "documents_for_ai",
+    icon: StorageIcon,
     accent: "#0F766E",
   },
 ];
