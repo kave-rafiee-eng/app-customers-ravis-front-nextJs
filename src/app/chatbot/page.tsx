@@ -164,9 +164,7 @@ export default function ChatMain() {
   const [executionReport, setExecutionReport] = useState<boolean>(true);
   const [temp, setTemp] = useState("hello");
 
-  const [userId, setUserId] = useState<string>(
-    localStorage.getItem("userId") ?? "",
-  );
+  const [userId, setUserId] = useState<string>("");
 
   const handleColseModal = () => {
     setOpenModalNewCov(false);
@@ -176,6 +174,10 @@ export default function ChatMain() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    const userid = localStorage.getItem("userId");
+    if (userid) setUserId(userid);
+  }, []);
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
