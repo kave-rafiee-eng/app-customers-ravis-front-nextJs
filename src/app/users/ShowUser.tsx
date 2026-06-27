@@ -26,7 +26,7 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
-
+import ReplayIcon from "@mui/icons-material/Replay";
 enum TabsEnum {
   info = "info",
   memory = "memory",
@@ -126,18 +126,34 @@ export default function ShowUser({ id }: propsType) {
             </Stack>
 
             <Tooltip title="Copy user id">
-              <IconButton
-                aria-label="copy user id"
-                onClick={handleCopy}
-                sx={{
-                  bgcolor: "rgba(255,255,255,0.14)",
-                  color: "common.white",
-                  alignSelf: "flex-start",
-                  "&:hover": { bgcolor: "rgba(255,255,255,0.22)" },
-                }}
-              >
-                <ContentCopyIcon fontSize="small" />
-              </IconButton>
+              <Stack direction={"row"} spacing={1}>
+                <IconButton
+                  aria-label="copy user id"
+                  onClick={handleCopy}
+                  sx={{
+                    bgcolor: "rgba(255,255,255,0.14)",
+                    color: "common.white",
+                    alignSelf: "flex-start",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.22)" },
+                  }}
+                >
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>
+
+                <IconButton
+                  aria-label="copy user id"
+                  onClick={() => loadUser()}
+                  disabled={loading}
+                  sx={{
+                    bgcolor: "rgba(255,255,255,0.14)",
+                    color: "common.white",
+                    alignSelf: "flex-start",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.22)" },
+                  }}
+                >
+                  <ReplayIcon fontSize="small" />
+                </IconButton>
+              </Stack>
             </Tooltip>
           </Stack>
         </Box>
