@@ -1,21 +1,29 @@
 "use client";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import {
   Box,
-  FormControl,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
+  InputAdornment,
+  Paper,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { API_BACKEND } from "../constant";
 import { useSnackBarError } from "../stors/snakebar-store";
-import { MiniDescriptionType } from "../menu/type/menu_type";
 import { userType } from "./type";
 
 type propsType = {
@@ -28,17 +36,17 @@ export default function ShowListUsers({ onEdit, activeId, update }: propsType) {
   const addMessage = useSnackBarError((state) => state.addMessage);
 
   const [users, setUsers] = useState<userType[]>([]);
-
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState("");
+  const [userToDelete, setUserToDelete] = useState<userType | null>(null);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const res = await API_BACKEND.get<userType[]>("/user");
       setUsers(res.data);
-      console.log(res.data);
     } catch (err) {
-      console.log(err);
       addMessage("can not load users", "error");
     } finally {
       setLoading(false);
@@ -49,45 +57,129 @@ export default function ShowListUsers({ onEdit, activeId, update }: propsType) {
     loadUsers();
   }, [loadUsers, update]);
 
-  //   const handleDelete = async (
-  //     id: string,
-  //     event: React.MouseEvent<HTMLButtonElement>,
-  //   ) => {
-  //     event.stopPropagation();
+  const filteredUsers = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return users;
 
-  //     try {
-  //       await API_BACKEND.delete(`${END_POINT_AI_DOCUMENTS}/${id}`);
-  //       addMessage("document deleted", "succes");
-  //       onEdit(null);
-  //       await loadDocuments();
-  //     } catch (err) {
-  //       console.log(err);
-  //       addMessage("failed to delete document", "error");
-  //     }
-  //   };
+    return users.filter(
+      (user) =>
+        user.phone.toLowerCase().includes(query) ||
+        user.name?.toLowerCase().includes(query) ||
+        user.email?.toLowerCase().includes(query),
+    );
+  }, [search, users]);
+
+  const handleOpenDeleteDialog = (
+    user: userType,
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.stopPropagation();
+    setUserToDelete(user);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    if (!deleting) {
+      setUserToDelete(null);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!userToDelete) return;
+
+    setDeleting(true);
+    try {
+      await API_BACKEND.delete(`user/${userToDelete.id}`);
+      addMessage("user deleted", "succes");
+
+      if (activeId === userToDelete.id) {
+        onEdit(null);
+      }
+
+      setUserToDelete(null);
+      await loadUsers();
+    } catch (err) {
+      addMessage("failed to delete user", "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <Stack direction="column" spacing={1} sx={{ height: "100%", p: 1 }}>
+    <Stack spacing={1.5} sx={{ height: "100%", p: 1.5 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          p: 1.5,
+        }}
+      >
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1" fontWeight={800}>
+            Users
+          </Typography>
+          <Chip
+            label={`${users.length} total`}
+            size="small"
+            sx={{ bgcolor: "#F0F4F8", fontWeight: 700 }}
+          />
+        </Stack>
+
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Search by phone, name or email..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          sx={{ mt: 1.5 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchOutlinedIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </Paper>
+
       <Stack
         direction="column"
-        spacing={0.5}
-        sx={{ overflowY: "auto", flex: 1 }}
+        spacing={0.75}
+        sx={{ overflowY: "auto", flex: 1, minHeight: 0 }}
       >
         {loading && users.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
-            loading...
-          </Typography>
-        ) : users.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
-            no user found
-          </Typography>
+          <Stack alignItems="center" justifyContent="center" sx={{ py: 4 }}>
+            <CircularProgress size={24} />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              loading users...
+            </Typography>
+          </Stack>
+        ) : filteredUsers.length === 0 ? (
+          <Paper
+            elevation={0}
+            sx={{
+              border: "1px dashed",
+              borderColor: "divider",
+              borderRadius: 2,
+              p: 3,
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {search.trim() ? "no user matches your search" : "no user found"}
+            </Typography>
+          </Paper>
         ) : (
-          users.map((user) => {
+          filteredUsers.map((user) => {
             const isActive = activeId === user.id;
 
             return (
-              <Box
+              <Paper
                 key={user.id}
+                elevation={0}
                 onClick={() => onEdit(user.id)}
                 sx={{
                   cursor: "pointer",
@@ -95,10 +187,12 @@ export default function ShowListUsers({ onEdit, activeId, update }: propsType) {
                   borderColor: isActive ? "#1B3C53" : "divider",
                   bgcolor: isActive ? "#1B3C53" : "background.paper",
                   color: isActive ? "common.white" : "text.primary",
-                  borderRadius: 1,
+                  borderRadius: 2,
                   transition: "all 0.15s ease",
+                  overflow: "hidden",
                   "&:hover": {
                     borderColor: "#1B3C53",
+                    boxShadow: isActive ? "none" : "0 2px 8px rgba(27, 60, 83, 0.08)",
                   },
                 }}
               >
@@ -106,51 +200,116 @@ export default function ShowListUsers({ onEdit, activeId, update }: propsType) {
                   direction="row"
                   alignItems="center"
                   justifyContent="space-between"
-                  sx={{ px: 1.5, py: 1 }}
+                  sx={{ px: 1.25, py: 1.25 }}
                   spacing={1}
                 >
-                  <Stack spacing={0.25} sx={{ minWidth: 0, flex: 1 }}>
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={700}
-                      noWrap
+                  <Stack direction="row" alignItems="center" spacing={1.25} sx={{ minWidth: 0, flex: 1 }}>
+                    <Box
                       sx={{
-                        direction: "rtl",
-                        unicodeBidi: "plaintext",
+                        alignItems: "center",
+                        bgcolor: isActive ? "rgba(255,255,255,0.14)" : "#F0F4F8",
+                        borderRadius: 1.5,
+                        color: isActive ? "common.white" : "#1B3C53",
+                        display: "flex",
+                        flexShrink: 0,
+                        height: 40,
+                        justifyContent: "center",
+                        width: 40,
                       }}
                     >
-                      {user.phone}
-                    </Typography>
-                    {user.name && (
+                      <PersonOutlineOutlinedIcon fontSize="small" />
+                    </Box>
+
+                    <Stack spacing={0.25} sx={{ minWidth: 0, flex: 1 }}>
                       <Typography
-                        variant="caption"
+                        variant="subtitle2"
+                        fontWeight={700}
                         noWrap
                         sx={{
-                          color: isActive ? "grey.300" : "text.secondary",
+                          direction: "rtl",
+                          unicodeBidi: "plaintext",
                         }}
                       >
-                        {user.name}
+                        {user.phone}
                       </Typography>
-                    )}
+                      {user.name ? (
+                        <Typography
+                          variant="caption"
+                          noWrap
+                          sx={{
+                            color: isActive ? "grey.300" : "text.secondary",
+                          }}
+                        >
+                          {user.name}
+                        </Typography>
+                      ) : (
+                        <Typography
+                          variant="caption"
+                          noWrap
+                          sx={{
+                            color: isActive ? "grey.400" : "text.disabled",
+                            fontStyle: "italic",
+                          }}
+                        >
+                          no name
+                        </Typography>
+                      )}
+                    </Stack>
                   </Stack>
 
-                  <IconButton
-                    size="small"
-                    aria-label="delete document"
-                    // onClick={(event) => handleDelete(user.id, event)}
-                    sx={{
-                      color: isActive ? "common.white" : "error.main",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <DeleteOutlineIcon fontSize="small" />
-                  </IconButton>
+                  <Tooltip title="Delete user">
+                    <IconButton
+                      size="small"
+                      aria-label="delete user"
+                      onClick={(event) => handleOpenDeleteDialog(user, event)}
+                      sx={{
+                        color: isActive ? "common.white" : "error.main",
+                        flexShrink: 0,
+                        bgcolor: isActive ? "rgba(255,255,255,0.1)" : "transparent",
+                        "&:hover": {
+                          bgcolor: isActive
+                            ? "rgba(255,255,255,0.18)"
+                            : "rgba(211, 47, 47, 0.08)",
+                        },
+                      }}
+                    >
+                      <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
-              </Box>
+              </Paper>
             );
           })
         )}
       </Stack>
+
+      <Dialog
+        open={Boolean(userToDelete)}
+        onClose={handleCloseDeleteDialog}
+      >
+        <DialogTitle>delete user</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            are you sure you want to delete user{" "}
+            <strong>{userToDelete?.phone}</strong>
+            {userToDelete?.name ? ` (${userToDelete.name})` : ""}? this action
+            cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} disabled={deleting}>
+            cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            disabled={deleting}
+          >
+            {deleting ? "deleting..." : "delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 }

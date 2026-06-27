@@ -27,7 +27,7 @@ import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumb
 import SimpleSnackbar from "../general-components/SnackbarError";
 import { useSnackBarError } from "../stors/snakebar-store";
 import { API_BACKEND } from "../constant";
-import { TicketStatusEnum, TicketType } from "./ticketType";
+import { TicketStatusEnum, TicketType } from "../users/type";
 
 const ACCENT = "#1B3C53";
 
@@ -73,7 +73,7 @@ function TicketListItem({
           spacing={1}
         >
           <Typography variant="caption" color="text.secondary" noWrap>
-            {ticket.userid}
+            {ticket.user.id}
           </Typography>
           <Chip
             label={ticket.status}
@@ -135,7 +135,8 @@ export default function TicketPage() {
 
   const loadTickets = React.useCallback(async () => {
     try {
-      const response = await API_BACKEND.get<TicketType[]>("/ticket");
+      const response = await API_BACKEND.get<TicketType[]>("/user/tickets/all");
+      console.log(response.data);
       setTickets(response.data);
     } catch (err) {
       console.log(err);
@@ -170,12 +171,12 @@ export default function TicketPage() {
 
     setSaving(true);
     try {
-      await API_BACKEND.patch(`/ticket/${selectedTicket.id}`, {
-        userid: selectedTicket.userid,
-        question: selectedTicket.question,
-        answer: answer.trim(),
-        status: TicketStatusEnum.closed,
-      });
+      const res = await API_BACKEND.patch(
+        `user/tickets/${selectedTicket.id}/close`,
+        {
+          answer: answer.trim(),
+        },
+      );
       addMessage("ticket updated", "succes");
       await loadTickets();
       setSelectedId("");
@@ -193,7 +194,7 @@ export default function TicketPage() {
 
     setDeleting(true);
     try {
-      await API_BACKEND.delete(`/ticket/${selectedTicket.id}`);
+      await API_BACKEND.delete(`user/tickets/${selectedTicket.id}`);
       addMessage("ticket deleted", "succes");
       setOpenDeleteDialog(false);
       setSelectedId("");
@@ -368,9 +369,9 @@ export default function TicketPage() {
                       <Typography variant="caption" color="text.secondary">
                         userid
                       </Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      {/* <Typography variant="body1" fontWeight={600}>
                         {selectedTicket.userid}
-                      </Typography>
+                      </Typography> */}
                     </Box>
 
                     <Box>
@@ -504,7 +505,7 @@ export default function TicketPage() {
         <DialogContent>
           <DialogContentText>
             are you sure you want to delete this ticket from user{" "}
-            <strong>{selectedTicket?.userid}</strong>? this action cannot be
+            <strong>{selectedTicket?.user.phone}</strong>? this action cannot be
             undone.
           </DialogContentText>
         </DialogContent>

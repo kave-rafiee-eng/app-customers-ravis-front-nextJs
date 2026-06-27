@@ -16,20 +16,20 @@ export type UserInfoType = {
   job?: string;
 };
 
-export enum ticketStatusEnum {
+export enum TicketStatusEnum {
   pending = "pending",
   closed = "closed",
 }
 export type TicketType = {
   id: string;
 
-  user: string;
+  user: userType;
 
   question: string;
 
   answer: string;
 
-  status: ticketStatusEnum;
+  status: TicketStatusEnum;
 
   createdAt: Date;
 

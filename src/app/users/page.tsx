@@ -19,13 +19,7 @@ export default function USers() {
 
   const [updateCount, setUpdateCount] = useState(0);
 
-  const [openNewDocumentModal, setOpenNewDocumentModal] = useState(false);
   const addMessage = useSnackBarError((state) => state.addMessage);
-  const [download, setDownload] = useState(false);
-
-  const handleCloseModal = () => {
-    setOpenNewDocumentModal(false);
-  };
 
   return (
     <Box
@@ -38,26 +32,6 @@ export default function USers() {
     >
       <SimpleSnackbar></SimpleSnackbar>
 
-      {/* <Modal
-        open={openNewDocumentModal}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <NewDocumentModal
-          onClose={handleCloseModal}
-          onSuccess={(newId) => {
-            setIdEdit(newId);
-            handleCloseModal();
-            addMessage("added .", "succes");
-            setUpdateCount((prev) => prev + 1);
-          }}
-        />
-      </Modal> */}
-
-      {
-        //Header
-      }
       <Box sx={{ background: "#1B3C53", height: "10%" }}>
         <Stack
           direction={"row"}
@@ -77,18 +51,6 @@ export default function USers() {
               Home
             </Typography>
           </Link>
-
-          <Button
-            variant="contained"
-            onClick={() => setOpenNewDocumentModal(true)}
-            sx={{
-              color: "white",
-              textTransform: "none",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-            }}
-          >
-            Add new Document
-          </Button>
         </Stack>
       </Box>
 
@@ -114,7 +76,6 @@ export default function USers() {
           maxHeight={"100%"}
           overflow={"auto"}
         >
-          {idEdit}
           {idEdit && <ShowUser id={idEdit} />}
         </Grid>
       </Grid>
