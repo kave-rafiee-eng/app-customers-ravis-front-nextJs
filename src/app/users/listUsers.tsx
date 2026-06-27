@@ -24,7 +24,7 @@ type propsType = {
   update: number;
 };
 
-export default function ShowLisUsers({ onEdit, activeId, update }: propsType) {
+export default function ShowListUsers({ onEdit, activeId, update }: propsType) {
   const addMessage = useSnackBarError((state) => state.addMessage);
 
   const [users, setUsers] = useState<userType[]>([]);

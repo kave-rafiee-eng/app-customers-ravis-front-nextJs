@@ -7,7 +7,8 @@ import SimpleSnackbar from "../general-components/SnackbarError";
 import Link from "next/link";
 
 import { useSnackBarError } from "../stors/snakebar-store";
-import ShowLisUsers from "./listUsers";
+import ShowListUsers from "./listUsers";
+import ShowUser from "./ShowUser";
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -99,7 +100,7 @@ export default function USers() {
           overflow={"auto"}
           height={"100%"}
         >
-          <ShowLisUsers
+          <ShowListUsers
             update={updateCount}
             onEdit={(id) => setIdEdit(id)}
             activeId={idEdit}
@@ -114,15 +115,7 @@ export default function USers() {
           overflow={"auto"}
         >
           {idEdit}
-          {idEdit && (
-            // <EditDocument
-            //   idEdit={idEdit}
-            //   onUpdate={() => {
-            //     setUpdateCount((prev) => prev + 1);
-            //   }}
-            // />
-            <Typography></Typography>
-          )}
+          {idEdit && <ShowUser id={idEdit} />}
         </Grid>
       </Grid>
     </Box>

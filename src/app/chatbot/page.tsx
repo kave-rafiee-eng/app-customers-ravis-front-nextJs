@@ -25,7 +25,7 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import TerminalOutlinedIcon from "@mui/icons-material/TerminalOutlined";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { API_CHATBOT } from "../constant";
+import { API_BACKEND, API_CHATBOT } from "../constant";
 import { useSnackBarError } from "../stors/snakebar-store";
 import { MessageType } from "./message-type";
 import { createHistory } from "./history";
@@ -164,6 +164,10 @@ export default function ChatMain() {
   const [executionReport, setExecutionReport] = useState<boolean>(true);
   const [temp, setTemp] = useState("hello");
 
+  const [userId, setUserId] = useState<string>(
+    localStorage.getItem("userId") ?? "",
+  );
+
   const handleColseModal = () => {
     setOpenModalNewCov(false);
   };
@@ -176,44 +180,57 @@ export default function ChatMain() {
     scrollToBottom();
   }, [messages]);
 
+  const checkUserId = async (): Promise<boolean> => {
+    try {
+      await API_BACKEND.get(`user/${userId}`);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
   const sendQuery = async (query: string) => {
     setSending(true);
 
-    try {
-      const startTime = Date.now();
-      const res = await API_CHATBOT.post("/agent", {
-        userid: "kave",
-        query: query,
-        history: createHistory([...messages.msg]),
-        executionReport,
-      });
+    if (await checkUserId()) {
+      try {
+        const startTime = Date.now();
+        const res = await API_CHATBOT.post("/agent", {
+          userid: userId,
+          query: query,
+          history: createHistory([...messages.msg]),
+          executionReport,
+        });
 
-      const endTime = Date.now();
-      const durationInSeconds = (endTime - startTime) / 1000;
+        const endTime = Date.now();
+        const durationInSeconds = (endTime - startTime) / 1000;
 
-      const newMsg: MessageType = {
-        type: "human",
-        data: query,
-      };
+        const newMsg: MessageType = {
+          type: "human",
+          data: query,
+        };
 
-      setMessages((prev) => ({
-        ...prev,
-        msg: [
-          ...prev.msg,
-          newMsg,
-          {
-            type: "ai",
-            data: res.data.answer,
-            time: durationInSeconds,
-            model: res.data.model,
-          },
-        ],
-        excution: res.data.Execution,
-      }));
+        setMessages((prev) => ({
+          ...prev,
+          msg: [
+            ...prev.msg,
+            newMsg,
+            {
+              type: "ai",
+              data: res.data.answer,
+              time: durationInSeconds,
+              model: res.data.model,
+            },
+          ],
+          excution: res.data.Execution,
+        }));
 
-      setTemp("");
-    } catch (err) {
-      addError("error http", "error");
+        setTemp("");
+      } catch (err) {
+        addError("error http", "error");
+      }
+    } else {
+      addError("user id is not valid", "error");
     }
 
     setSending(false);
@@ -284,6 +301,33 @@ export default function ChatMain() {
                 test responses and agent speed
               </Typography>
             </Box>
+
+            <TextField
+              id="outlined-basic"
+              label="user id"
+              variant="outlined"
+              value={userId}
+              size="small"
+              fullWidth
+              sx={{
+                background: "white",
+              }}
+              onChange={(event) => {
+                setUserId(event.target.value);
+              }}
+            />
+            <Button
+              sx={{
+                color: "white",
+                textTransform: "none",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+              }}
+              onClick={() => {
+                localStorage.setItem("userId", userId);
+              }}
+            >
+              Save
+            </Button>
           </Stack>
 
           <Stack direction="row" spacing={1} alignItems="center">
