@@ -23,6 +23,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import GroupIcon from "@mui/icons-material/Group";
 import StorageIcon from "@mui/icons-material/Storage";
 import type { SvgIconComponent } from "@mui/icons-material";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
@@ -90,6 +91,13 @@ const appSections: Section[] = [
     href: "documents_for_ai",
     icon: StorageIcon,
     accent: "#0F766E",
+  },
+  {
+    title: "user",
+    description: "users",
+    href: "users",
+    icon: GroupIcon,
+    accent: "#456882",
   },
 ];
 
