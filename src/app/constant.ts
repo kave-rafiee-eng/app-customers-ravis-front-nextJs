@@ -1,13 +1,27 @@
 import axios from "axios";
+import appConfig from "./config.json";
+import { SERVER } from "../../env";
+
+enum LOCAL_OR_SERVER {
+  SERVER = "SERVER",
+  LOCAL = "LOCAL",
+}
+
+const RUN_FROM: LOCAL_OR_SERVER =
+  SERVER == true ? LOCAL_OR_SERVER.SERVER : LOCAL_OR_SERVER.LOCAL;
 
 const MENU_API_BASE_URL =
-  process.env.BACKEND_BASE_URL ?? "http://localhost:3000";
-
+  RUN_FROM == LOCAL_OR_SERVER.LOCAL
+    ? appConfig.local_backendBaseUrl
+    : appConfig.server_backendBaseUrl;
 const TRANSLATE_API_BASE_URL =
-  process.env.TRANSLATE_API_BASE_URL ?? "http://localhost:8001";
-
+  RUN_FROM == LOCAL_OR_SERVER.LOCAL
+    ? appConfig.local_translateApiBaseUrl
+    : appConfig.server_translateApiBaseUrl;
 const CHATBOT_API_BASE_URL =
-  process.env.CHAT_BOT_BASE_URL ?? "http://localhost:8000";
+  RUN_FROM == LOCAL_OR_SERVER.LOCAL
+    ? appConfig.local_chatBotBaseUrl
+    : appConfig.server_chatBotBaseUrl;
 
 export const API_BACKEND = axios.create({
   baseURL: MENU_API_BASE_URL,
