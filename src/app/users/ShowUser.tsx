@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
   Divider,
@@ -27,6 +28,8 @@ import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 enum TabsEnum {
   info = "info",
   memory = "memory",
@@ -91,6 +94,23 @@ export default function ShowUser({ id }: propsType) {
       addMessage("copy", "succes");
     } catch (err) {
       addMessage("can not copy", "error");
+    }
+  };
+
+  const handleClearAgentMemory = async () => {
+    try {
+      const res = await API_BACKEND.patch("/user/" + id, {
+        agentMemory: "",
+      });
+
+      if (res.status == 200) {
+        addMessage("memory cleared .", "succes");
+        setUser(res.data);
+      } else {
+        addMessage("http code error : " + res.status, "error");
+      }
+    } catch (err) {
+      addMessage("http Error", "error");
     }
   };
 
@@ -281,6 +301,13 @@ export default function ShowUser({ id }: propsType) {
                   wordBreak: "break-word",
                 }}
               >
+                <IconButton
+                  size="small"
+                  disabled={user === null}
+                  onClick={handleClearAgentMemory}
+                >
+                  <DeleteIcon fontSize="inherit" />
+                </IconButton>
                 {user.agentMemory || (
                   <Typography variant="body2" color="text.secondary">
                     no memory saved for this user
