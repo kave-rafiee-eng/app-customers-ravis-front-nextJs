@@ -183,6 +183,7 @@ export default function ChatMain() {
   }, [messages]);
 
   const checkUserId = async (): Promise<boolean> => {
+    if (userId == "") return false;
     try {
       await API_BACKEND.get(`user/${userId}`);
       return true;

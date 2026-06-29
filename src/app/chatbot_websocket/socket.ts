@@ -25,7 +25,7 @@ export const useSocket = create<socketStorType>((set, get) => ({
     set({ _manualDisconnect: true });
     if (get().socket) return;
 
-    const port = "ws://localhost:8000";
+    const port = "ws://localhost:8000/ws/11";
     const ws = new WebSocket(port);
     console.log(`websocet:${port}`);
 
