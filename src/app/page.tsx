@@ -65,6 +65,13 @@ const appSections: Section[] = [
     accent: "#6366F1",
   },
   {
+    title: "Chat v2",
+    description: "Web socket mode",
+    href: "chatbot_websocket",
+    icon: SmartToyIcon,
+    accent: "#456882",
+  },
+  {
     title: "Documents",
     description: "Edit PDF files and categories",
     href: "documents",
