@@ -2,8 +2,10 @@
   "local_backendBaseUrl": "http://localhost:3000",
   "local_translateApiBaseUrl": "http://localhost:8001",
   "local_chatBotBaseUrl": "http://localhost:8000",
+  "local_chatBot_websocket" : "ws://localhost:8000",
 
   "server_backendBaseUrl": "http://109.125.149.108:3000",
   "server_translateApiBaseUrl": "http://109.125.149.108:8001",
-  "server_chatBotBaseUrl": "http://109.125.149.108:8000"
+  "server_chatBotBaseUrl": "http://109.125.149.108:8000",
+  "server_chatBot_websocket" : "ws://109.125.149.108:8000"
 }

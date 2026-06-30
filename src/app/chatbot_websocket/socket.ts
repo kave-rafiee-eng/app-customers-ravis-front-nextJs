@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { CHATBOT_WS_URL } from "../constant";
 
 type Listener = (data: any) => void;
 
@@ -25,7 +26,9 @@ export const useSocket = create<socketStorType>((set, get) => ({
     set({ _manualDisconnect: true });
     if (get().socket) return;
 
-    const port = "ws://localhost:8000/ws/11";
+    const port = `${CHATBOT_WS_URL}/ws/${Math.floor(Math.random() * 10000)}`;
+    console.log(port);
+
     const ws = new WebSocket(port);
     console.log(`websocet:${port}`);
 

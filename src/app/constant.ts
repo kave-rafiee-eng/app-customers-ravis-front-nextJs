@@ -22,6 +22,10 @@ const CHATBOT_API_BASE_URL =
   RUN_FROM == LOCAL_OR_SERVER.LOCAL
     ? appConfig.local_chatBotBaseUrl
     : appConfig.server_chatBotBaseUrl;
+export const CHATBOT_WS_URL =
+  RUN_FROM == LOCAL_OR_SERVER.LOCAL
+    ? appConfig.local_chatBot_websocket
+    : appConfig.server_chatBot_websocket;
 
 export const API_BACKEND = axios.create({
   baseURL: MENU_API_BASE_URL,
