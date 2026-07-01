@@ -3,7 +3,8 @@ import { AUTH_COOKIE, getAuthCookieOptions } from "@/lib/auth-cookie";
 
 export async function POST(request: Request) {
     const { password } = await request.json();
-    const validPassword = process.env.ADMIN_PASSWORD ?? "admin";
+    // const validPassword = process.env.ADMIN_PASSWORD ?? "admin";
+    const validPassword = "admin";
 
     if (password !== validPassword) {
         return NextResponse.json(
