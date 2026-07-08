@@ -9,6 +9,7 @@ import {
   Stack,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -19,7 +20,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { TicketStatusEnum, userType } from "./type";
+import { DeviceType, TicketStatusEnum, userType } from "./type";
 import { API_BACKEND } from "../constant";
 import { useSnackBarError } from "../stors/snakebar-store";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -27,19 +28,24 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
+import LockIcon from "@mui/icons-material/Lock";
 import ReplayIcon from "@mui/icons-material/Replay";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AddIcon from "@mui/icons-material/Add";
 
 enum TabsEnum {
   info = "info",
   memory = "memory",
   tickets = "tickets",
+  devices = "devices",
 }
 
 const tabLabels: Record<TabsEnum, string> = {
   [TabsEnum.info]: "Info",
   [TabsEnum.memory]: "Memory",
   [TabsEnum.tickets]: "Tickets",
+  [TabsEnum.devices]: "Devices",
 };
 
 type propsType = {
@@ -47,6 +53,11 @@ type propsType = {
 };
 
 export default function ShowUser({ id }: propsType) {
+  const [listDevices, setListDevices] = useState<DeviceType[]>([]);
+  const [deviceSerialInput, setDeviceSerialInput] = useState("");
+  const [loadingDevices, setLoadingDevices] = useState(false);
+  const [addingDevice, setAddingDevice] = useState(false);
+
   const [user, setUser] = useState<userType>();
   const [loading, setLoading] = useState(false);
 
@@ -57,6 +68,19 @@ export default function ShowUser({ id }: propsType) {
   };
 
   const addMessage = useSnackBarError((state) => state.addMessage);
+
+  const loadListDevices = useCallback(async () => {
+    setLoadingDevices(true);
+    try {
+      const res = await API_BACKEND.get<DeviceType[]>("user/devices/all");
+      setListDevices(res.data);
+      console.log(res.data);
+    } catch (err) {
+      addMessage("can not get list devices", "error");
+    } finally {
+      setLoadingDevices(false);
+    }
+  }, [addMessage]);
 
   const loadUser = useCallback(async () => {
     setLoading(true);
@@ -73,6 +97,61 @@ export default function ShowUser({ id }: propsType) {
   useEffect(() => {
     loadUser();
   }, [loadUser]);
+
+  useEffect(() => {
+    if (tab === TabsEnum.devices) {
+      loadListDevices();
+    }
+  }, [tab, loadListDevices]);
+
+  const userDeviceSerials = new Set(
+    user?.devices.map((device) => device.serial) ?? [],
+  );
+
+  const listDeviceSerials = useMemo(
+    () => new Set(listDevices.map((device) => device.serial)),
+    [listDevices],
+  );
+
+  const parsedDeviceSerial = useMemo(() => {
+    const trimmed = deviceSerialInput.trim();
+    if (!trimmed) return null;
+
+    const value = Number(trimmed);
+    if (!Number.isInteger(value) || value < 0) return null;
+
+    return value;
+  }, [deviceSerialInput]);
+
+  const canAddDevice =
+    parsedDeviceSerial !== null &&
+    !userDeviceSerials.has(parsedDeviceSerial) &&
+    listDeviceSerials.has(parsedDeviceSerial);
+
+  const deviceSerialHelperText = useMemo(() => {
+    if (!deviceSerialInput.trim()) {
+      return "enter device serial number";
+    }
+
+    if (parsedDeviceSerial === null) {
+      return "serial must be a valid number";
+    }
+
+    if (userDeviceSerials.has(parsedDeviceSerial)) {
+      return "this device is already assigned to the user";
+    }
+
+    if (!listDeviceSerials.has(parsedDeviceSerial)) {
+      return "serial not found in device list";
+    }
+
+    return "device found and ready to add";
+  }, [
+    deviceSerialInput,
+    listDeviceSerials,
+    parsedDeviceSerial,
+    userDeviceSerials,
+  ]);
 
   const ticketSummary = useMemo(() => {
     const tickets = user?.tickets ?? [];
@@ -111,6 +190,38 @@ export default function ShowUser({ id }: propsType) {
       }
     } catch (err) {
       addMessage("http Error", "error");
+    }
+  };
+
+  const handleDeletDevice = async (serial: number) => {
+    try {
+      const res = await API_BACKEND.delete(`user/${id}/devices/${serial}`);
+      if (res.status == 200) {
+        addMessage("device deleted .", "succes");
+        await loadUser();
+      } else {
+        addMessage("http code error : " + res.status, "error");
+      }
+    } catch (err) {
+      addMessage("http Error", "error");
+    }
+  };
+
+  const handleAddDeviceToUser = async (serial: number) => {
+    setAddingDevice(true);
+    try {
+      const res = await API_BACKEND.post(`user/${id}/devices/${serial}`);
+      if (res.status == 201) {
+        addMessage("device added .", "succes");
+        setUser(res.data);
+        setDeviceSerialInput("");
+      } else {
+        addMessage("http code error : " + res.status, "error");
+      }
+    } catch (err) {
+      addMessage("http Error", "error");
+    } finally {
+      setAddingDevice(false);
     }
   };
 
@@ -263,6 +374,11 @@ export default function ShowUser({ id }: propsType) {
                   value={user.phone}
                 />
                 <InfoRow
+                  icon={<LockIcon fontSize="small" />}
+                  label="password"
+                  value={user.password}
+                />
+                <InfoRow
                   icon={<EmailOutlinedIcon fontSize="small" />}
                   label="Email"
                   value={user.email}
@@ -380,6 +496,112 @@ export default function ShowUser({ id }: propsType) {
                             {ticket.answer}
                           </Typography>
                         )}
+                      </Stack>
+                    </Paper>
+                  ))
+                )}
+              </Stack>
+            )}
+
+            {tab === TabsEnum.devices && (
+              <Stack spacing={1.5}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    p: 1.5,
+                  }}
+                >
+                  <Stack spacing={1.5}>
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      add device
+                    </Typography>
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                      <TextField
+                        label="serial"
+                        type="number"
+                        size="small"
+                        fullWidth
+                        value={deviceSerialInput}
+                        onChange={(event) =>
+                          setDeviceSerialInput(event.target.value)
+                        }
+                        disabled={addingDevice || loadingDevices}
+                        helperText={deviceSerialHelperText}
+                        slotProps={{
+                          htmlInput: { min: 0, step: 1 },
+                        }}
+                      />
+
+                      <Button
+                        variant="contained"
+                        startIcon={
+                          addingDevice ? (
+                            <CircularProgress size={16} color="inherit" />
+                          ) : (
+                            <AddIcon />
+                          )
+                        }
+                        onClick={() => {
+                          if (parsedDeviceSerial !== null) {
+                            handleAddDeviceToUser(parsedDeviceSerial);
+                          }
+                        }}
+                        disabled={
+                          !canAddDevice || addingDevice || loadingDevices
+                        }
+                        sx={{
+                          whiteSpace: "nowrap",
+                          bgcolor: "#1B3C53",
+                          "&:hover": { bgcolor: "#152f42" },
+                        }}
+                      >
+                        {addingDevice ? "adding..." : "add device"}
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Paper>
+
+                <Divider />
+
+                {user.devices.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    no devices assigned to this user
+                  </Typography>
+                ) : (
+                  user.devices.map((device) => (
+                    <Paper
+                      key={device.serial}
+                      elevation={0}
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 2,
+                        p: 1.5,
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={1.5}>
+                        <Typography fontWeight={600}>
+                          {device.serial}
+                        </Typography>
+                        {device.address && (
+                          <Typography variant="body2" color="text.secondary">
+                            {device.address}
+                          </Typography>
+                        )}
+                        <Box sx={{ flex: 1 }} />
+                        <IconButton
+                          onClick={() => {
+                            handleDeletDevice(device.serial);
+                          }}
+                          color="error"
+                          aria-label="delete device"
+                        >
+                          <DeleteOutlineIcon fontSize="small" />
+                        </IconButton>
                       </Stack>
                     </Paper>
                   ))

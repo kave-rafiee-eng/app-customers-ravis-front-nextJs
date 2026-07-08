@@ -36,20 +36,25 @@ export type TicketType = {
   closedAt: Date;
 };
 
+export type DeviseInfoType = {
+  phone?: string;
+};
+
+export type DeviceType = {
+  serial: number;
+  address: string;
+  info: DeviseInfoType;
+};
 export type userType = {
   id: string;
 
-  name: string;
-
   phone: string;
-
   email: string;
-
+  password: string;
+  name: string;
   info: UserInfoType;
-
   agentMemory: string;
-
   tickets: TicketType[];
-
   messageAiHistories: MessageAiHistoryType[];
+  devices: DeviceType[];
 };
