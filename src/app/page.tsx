@@ -27,6 +27,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import StorageIcon from "@mui/icons-material/Storage";
 import type { SvgIconComponent } from "@mui/icons-material";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import ElevatorIcon from "@mui/icons-material/Elevator";
 import React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -104,6 +105,13 @@ const appSections: Section[] = [
     description: "View user profiles, memory and ticket history",
     href: "users",
     icon: GroupIcon,
+    accent: "#456882",
+  },
+  {
+    title: "Devices",
+    description: "View device and serial",
+    href: "device",
+    icon: ElevatorIcon,
     accent: "#456882",
   },
 ];
