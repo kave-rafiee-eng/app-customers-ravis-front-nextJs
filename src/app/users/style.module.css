@@ -1,0 +1,87 @@
+.phoneField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.phoneLabel {
+  color: rgba(0, 0, 0, 0.6);
+  padding-inline: 14px;
+}
+
+.phoneInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  padding: 16px 14px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.phoneInput:focus-within {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 1px #1976d2;
+}
+
+.phoneInputError {
+  border-color: #d32f2f;
+}
+
+.phoneInputError:focus-within {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 1px #d32f2f;
+}
+
+.phoneInput :global(.PhoneInputInput) {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font: inherit;
+  background: transparent;
+  text-align: left;
+  direction: ltr;
+}
+
+.phoneInput :global(.PhoneInputCountry) {
+  margin-right: 0;
+}
+
+.phoneInput :global(.PhoneInputCountryIcon) {
+  width: auto;
+  height: auto;
+  box-shadow: none;
+  background: transparent;
+}
+
+.countryLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    border-color: rgba(148, 163, 184, 0.15);
+    background: color-mix(in srgb, var(--background) 92%, white);
+    box-shadow:
+      0 20px 45px rgba(0, 0, 0, 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .phoneLabel {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .phoneInput {
+    border-color: rgba(255, 255, 255, 0.23);
+  }
+
+  .countryLabel {
+    color: rgba(255, 255, 255, 0.87);
+  }
+}

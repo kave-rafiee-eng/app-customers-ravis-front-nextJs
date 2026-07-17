@@ -60,6 +60,8 @@ export default function ShowUser({ id }: propsType) {
 
   const [user, setUser] = useState<userType>();
   const [loading, setLoading] = useState(false);
+  const [newPasswordInput, setNewPasswordInput] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const [tab, setTab] = useState<TabsEnum>(TabsEnum.info);
 
@@ -225,6 +227,29 @@ export default function ShowUser({ id }: propsType) {
     }
   };
 
+  const handleChangePassword = async () => {
+    const newPass = newPasswordInput.trim();
+    if (!newPass || !user?.phone) return;
+
+    setChangingPassword(true);
+    try {
+      const res = await API_BACKEND.patch(`user/change-pass/${user.phone}`, {
+        newPass,
+      });
+      if (res.status === 200) {
+        addMessage("password changed .", "succes");
+        loadUser();
+        setNewPasswordInput("");
+      } else {
+        addMessage("http code error : " + res.status, "error");
+      }
+    } catch (err) {
+      addMessage("http Error", "error");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   return (
     <Stack spacing={2} sx={{ p: 1 }}>
       <Paper
@@ -373,11 +398,76 @@ export default function ShowUser({ id }: propsType) {
                   label="Phone"
                   value={user.phone}
                 />
-                <InfoRow
-                  icon={<LockIcon fontSize="small" />}
-                  label="password"
-                  value={user.password}
-                />
+                <Paper
+                  elevation={0}
+                  sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    p: 1.5,
+                  }}
+                >
+                  <Stack spacing={1.5}>
+                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                      <Box
+                        sx={{
+                          alignItems: "center",
+                          bgcolor: "#F0F4F8",
+                          borderRadius: 1.5,
+                          color: "#1B3C53",
+                          display: "flex",
+                          height: 36,
+                          justifyContent: "center",
+                          width: 36,
+                        }}
+                      >
+                        <LockIcon fontSize="small" />
+                      </Box>
+
+                      <Stack sx={{ minWidth: 0, flex: 1 }} spacing={0.25}>
+                        <Typography variant="caption" color="text.secondary">
+                          password
+                        </Typography>
+                        <Typography variant="body2" fontWeight={700} noWrap>
+                          {user.password || "-"}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                      <TextField
+                        label="new password"
+                        size="small"
+                        fullWidth
+                        value={newPasswordInput}
+                        onChange={(event) =>
+                          setNewPasswordInput(event.target.value)
+                        }
+                        disabled={changingPassword}
+                        helperText="enter a new password for this user"
+                      />
+
+                      <Button
+                        variant="contained"
+                        startIcon={
+                          changingPassword && (
+                            <CircularProgress size={16} color="inherit" />
+                          )
+                        }
+                        onClick={handleChangePassword}
+                        disabled={!newPasswordInput.trim() || changingPassword}
+                        sx={{
+                          whiteSpace: "nowrap",
+                          bgcolor: "#1B3C53",
+                          "&:hover": { bgcolor: "#152f42" },
+                          padding: 3,
+                        }}
+                      >
+                        {changingPassword ? "changing..." : "change password"}
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Paper>
                 <InfoRow
                   icon={<EmailOutlinedIcon fontSize="small" />}
                   label="Email"
